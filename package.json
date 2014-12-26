@@ -1,0 +1,10 @@
+{
+  "name":"scramble",
+  "version":"0.2.0",
+  "main":"main.js",
+  "dependencies": {
+    "react":"0.12.2"
+  }
+}
+
+

@@ -1,0 +1,125 @@
+
+/*
+ * PAGE
+ */
+body {
+    overflow-y:scroll;
+}
+.deemphasize,.still-decrypting {
+    color:#888;
+}
+.active .deemphasize,.active .still-decrypting {
+    color:#ddd;
+}
+@font-face {
+  font-family: 'Droid Sans Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Droid Sans Mono'), local('DroidSansMono'), url(/css/droid-sans-mono.ttf) format('truetype');
+}
+
+
+/*
+ * LOGIN 
+ */
+.form-signin {
+    margin-top:40px;
+    max-width:400px;
+}
+.logo-img {
+    width:50px;
+    height:50px;
+}
+.strike span {
+    position:relative;
+    top:-30px;
+    background:white;
+    font-style:italic;
+    padding:8px;
+}
+
+
+
+
+/*
+ * INBOX
+ */
+.js-item.js-unread {
+    font-weight:bold;
+}
+.js-item .js-subject {
+    overflow:hidden;
+    vertical-align:bottom;
+}
+.js-item .js-date {
+    float:right;
+    width: 130px;
+    white-space:nowrap;
+    text-align:right;
+}
+.email-body, .encrypted-body {
+    white-space:pre-wrap;
+    font:12px "Droid Sans Mono",monospace;
+}
+.email-body:before,.email-body:after,
+.encrypted-body:before,.encrypted-body:after {
+    white-space:normal;
+}
+.encrypted-body {
+    display:none; /* controlled via "Show Original" */
+}
+
+
+
+/*
+ * COMPOSE
+ */
+.compose-form .to-label, .compose-form .to {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.compose-form .to {
+    width:100%;
+}
+.compose-form .subject {
+    border-radius: 0;
+    border-top-width: 0;
+}
+.compose-form .email-body {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top-width:0;
+}
+
+
+
+/*
+ * CONTACTS LIST
+ */
+.js-contact-item {
+    overflow:hidden;
+}
+.contact-name, .contact-email {
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+
+/*
+ * CONTACT DETAIL
+ */
+.contact-detail {
+    max-width:550px;
+}
+.contact-key {
+    font:11px "Droid Sans Mono",monospace;
+    color:#888;
+    white-space:pre;
+}
+#contact-show-private-key .action:before{
+    content:"Hide";
+}
+#contact-show-private-key.collapsed .action:before{
+    content:"Show";
+}
+
