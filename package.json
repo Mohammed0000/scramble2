@@ -1,9 +1,22 @@
 {
   "name":"scramble",
   "version":"0.2.0",
+  "description":"Scramble.io PGP Client",
+  "repository":"https://github.com/dcposch/scramble",
   "main":"main.js",
   "dependencies": {
-    "react":"0.12.2"
+    "react": "*",
+    "react-addons": "*",
+    "bootstrap": "*"
+  },
+  "devDependencies": {
+    "reactify": "*",
+    "browserify": "*",
+    "watchify": "*"
+  },
+  "scripts": {
+    "start": "npm run copy && browserify -t [reactify --harmony] jsx/*.jsx -o build/js/app.js",
+    "copy": "npm install && mkdir -p build/js && cp -r css/ img/ index.html build/ && cp node_modules/bootstrap/dist/css/bootstrap.min.css build/css/"
   }
 }
 

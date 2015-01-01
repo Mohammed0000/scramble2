@@ -1,103 +1,13 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Scramble.io</title>
     <link rel="stylesheet" href="css/bootstrap.min.css"></link>
     <link rel="stylesheet" href="css/style.css"></link>
-</head>
-<body>
-<div id="wrapper"></div>
-    <div class="container">
-        <div class="row">
-            <div class="form-signin center-block text-center" id="login">
-                <img src="./img/black_rubik.svg" class="logo-img"/>
-                <h1 class="text-center">Scramble</h1>
-                <h3 class="text-center">Encrypted email for everyone</h3>
-                <hr class="invis"/>
-                <input type="text" class="form-control" placeholder="Username" required="" autofocus="" id="token" name="token">
-                <br />
-                <input type="password" class="form-control" placeholder="Passphrase" required="" id="pass" name="pass">
-                <br />
-                <button class="btn btn-lg btn-default btn-block" type="submit" id="enterButton">Sign in</button>
-                <br />
-                <div class="error-signin text-danger"></div>
-                <div class="strike"><hr/><span>or</span></div>
-                <button class="btn btn-lg btn-primary btn-block" type="submit" id="generateButton">Create Account</button>
-                <small>
-                    <hr class="invis"/>
-                    <p>
-                        <a href="http://dcposch.github.com/scramble">How it works</a>
-                    </p>
-                    <p>
-                        Questions? Feedback? Just testing a new account?</br>
-                        Send us a note! To: hello@scramble.io 
-                    </p>    
-                </small>
-            </div>
-        </div>
-    </div>
-
-    <!-- CREATE ACCOUNT MODAL -->
-    <div class="modal fade" id="createAccountModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Welcome to Scramble!</h4>
-                </div>
-
-
-                <div class="modal-body form-horizontal" id="createForm">
-
-                    <div class="text-center">
-                        <em class="js-generating-keys">Generating PGP keys...</em>
-                    </div>
-                    <br/>
-
-                    <div class="form-group">
-                        <label for="createToken" class="col-sm-3 control-label">Username</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="createToken" />
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="createPass" class="col-sm-3 control-label">Password</label>
-                        <div class="col-sm-9">
-                            <input type="password" class="form-control" id="createPass" />
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="confirmPass" class="col-sm-3 control-label">Confirm Password</label>
-                        <div class="col-sm-9">
-                            <input type="password" class="form-control" id="confirmPass" />
-                        </div>
-                    </div>
-
-                    <p class="help-block">Please choose a strong passphrase and don't forget it.<br/>
-                        The server won't know your passphrase or your private key. It can't read your mail.<br/>
-                        This is sweet... but it also means that "password reset" is impossible!
-                    </p>
-
-                    <div class="form-group">
-                        <label for="secondaryEmail" class="col-sm-3 control-label">Secondary Email</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="secondaryEmail" />
-                        </div>
-                    </div>
-
-                    <p class="help-block">If you give us your other email, we'll keep you updated on our progress.<br/>
-                        We'll also remind you to check Scramble when you receive messages.
-                    </p>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" disabled="" id="createButton" >Create Account</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
+  </head>
+  <body>
+    <h1>Yo</h1>
+    <script src="js/app.js"></script>
+  </body>
 </html>
+
