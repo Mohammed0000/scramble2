@@ -1,3 +1,4 @@
+var Keybase = require("node-keybase");
 var App = require("app");
 var BrowserWindow = require("browser-window");
 
@@ -12,4 +13,19 @@ App.on("ready", function() {
   mainWindow.loadUrl("file://" + __dirname + "/build/index.html");
   mainWindow.openDevTools();
 });
+
+var keybaseUser = process.argv[2];
+var keybasePassphrase = process.argv[3];
+if(!keybaseUser || !keybasePassphrase){
+  console.log("To test Keybase: node <...> <keybase user> <keybase passphrase>");
+} else {
+  var keybase = new Keybase(keybaseUser, keybasePassphrase);
+  keybase.login(function(err, result){
+    if(err){
+      console.log("Keybase login error", err);
+      return;
+    }
+    console.log("Keybase login: ", result.status.name);
+  });
+}
 
