@@ -26,6 +26,8 @@ App.on("ready", function() {
 
 // Demo: searchable mail repo
 function demoMailRepo() {
+  // TODO: make sqlite3 build for atom-shell
+  return;
   var mailRepo = new ScrambleMailRepo("~/scramble-test-dir");
   mailRepo.search("hello", function(err, msgs){
     //inbox.setState("messages", msgs);
@@ -41,12 +43,19 @@ function demoKeybase() {
     console.log("To test Keybase: node <...> <keybase user> <keybase passphrase>");
   } else {
     var keybase = new Keybase(keybaseUser, keybasePassphrase);
+    keybase.user_autocomplete('fe', function(err, result){
+      if(err){
+        return console.warn("Keybase autocomplete error", err);
+      }
+      console.log(result);
+    });
     keybase.login(function(err, result){
       if(err){
-        console.log("Keybase login error", err);
-        return;
+        return console.warn("Keybase login error", err);
       }
       console.log("Keybase login: ", result.status.name);
+
+
     });
   }
 }
