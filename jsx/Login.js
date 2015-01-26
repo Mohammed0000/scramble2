@@ -1,8 +1,6 @@
-/** @jsx React.DOM */
-
 var React = require("react");
 
-module.exports = React.createClass({displayName: 'exports',
+module.exports = React.createClass({
     handleSignIn: function(){
         var username = this.refs.token.state.value;
         var password = this.refs.pass.state.value;
@@ -13,35 +11,35 @@ module.exports = React.createClass({displayName: 'exports',
     },
     render: function() {
         return (
-        React.DOM.div( {className:"container"}, 
-            React.DOM.div( {className:"row"}, 
-                React.DOM.div( {className:"form-signin center-block text-center"}, 
-                    React.DOM.img( {src:"./img/black_rubik.svg", className:"logo-img"} ),
-                    React.DOM.h1( {className:"text-center"}, "Scramble"),
-                    React.DOM.h3( {className:"text-center"}, "Encrypted email for everyone"),
-                    React.DOM.hr( {className:"invis"} ),
-                    React.DOM.input( {type:"text", className:"form-control", placeholder:"Username", required:"", autofocus:"", ref:"token"} ),
-                    React.DOM.br(null ),
-                    React.DOM.input( {type:"password", className:"form-control", placeholder:"Passphrase", required:"", ref:"pass"} ),
-                    React.DOM.br(null ),
-                    React.DOM.button( {className:"btn btn-lg btn-default btn-block", type:"submit", onClick:this.handleSignIn}, "Sign in"),
-                    React.DOM.br(null ),
-                    React.DOM.div( {className:"error-signin text-danger"}),
-                    React.DOM.div( {className:"strike"}, React.DOM.hr(null),React.DOM.span(null, "or")),
-                    React.DOM.button( {className:"btn btn-lg btn-primary btn-block", type:"submit", onClick:this.handleCreateAccount}, "Create Account"),
-                    React.DOM.small(null, 
-                        React.DOM.hr( {className:"invis"}),
-                        React.DOM.p(null, 
-                            React.DOM.a( {href:"http://dcposch.github.com/scramble"}, "How it works")
-                        ),
-                        React.DOM.p(null, 
-                            "Questions? Feedback? Just testing a new account?",React.DOM.br(null),
-                            "Send us a note! To: hello@scramble.io" 
-                        )    
-                    )
-                )
-            )
-        )
+        <div className="container">
+            <div className="row">
+                <div className="form-signin center-block text-center">
+                    <img src="./img/black_rubik.svg" className="logo-img" />
+                    <h1 className="text-center">Scramble</h1>
+                    <h3 className="text-center">Encrypted email for everyone</h3>
+                    <hr className="invis" />
+                    <input type="text" className="form-control" placeholder="Username" required="" autofocus="" ref="token" />
+                    <br />
+                    <input type="password" className="form-control" placeholder="Passphrase" required="" ref="pass" />
+                    <br />
+                    <button className="btn btn-lg btn-default btn-block" type="submit" onClick={this.handleSignIn}>Sign in</button>
+                    <br />
+                    <div className="error-signin text-danger"></div>
+                    <div className="strike"><hr/><span>or</span></div>
+                    <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleCreateAccount}>Create Account</button>
+                    <small>
+                        <hr className="invis"/>
+                        <p>
+                            <a href="http://dcposch.github.com/scramble">How it works</a>
+                        </p>
+                        <p>
+                            Questions? Feedback? Just testing a new account?<br/>
+                            Send us a note! To: hello@scramble.io 
+                        </p>    
+                    </small>
+                </div>
+            </div>
+        </div>
         );
     }
 });

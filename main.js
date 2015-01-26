@@ -11,9 +11,10 @@ var mainWindow = null;
 App.on("window-all-closed", App.quit.bind(App));
 
 // Wait for atom-shell to initialize
+App.commandLine.appendSwitch('js-flags', '--harmony');
 App.on("ready", function() {
   console.log(process.version);
-  console.log(process);
+
   mainWindow = new BrowserWindow({"width":1000,"height":700});
   mainWindow.loadUrl("file://" + __dirname + "/build/index.html");
   mainWindow.openDevTools();
@@ -54,8 +55,6 @@ function demoKeybase() {
         return console.warn("Keybase login error", err);
       }
       console.log("Keybase login: ", result.status.name);
-
-
     });
   }
 }

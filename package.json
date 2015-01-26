@@ -11,14 +11,9 @@
     "scramble-ui": "*",
     "scramble-mail-repo": "*"
   },
-  "devDependencies": {
-    "reactify": "*",
-    "browserify": "*",
-    "watchify": "*"
-  },
   "scripts": {
-    "start": "npm run copy && jsx --harmony jsx/ -o build/js/",
-    "copy": "npm install && mkdir -p build/js && cp -r css/ img/ index.html build/ && cp node_modules/bootstrap/dist/css/bootstrap.min.css build/css/"
+    "start": "npm run copy && jsx --harmony jsx/ build/",
+    "copy": "mkdir -p build/ && cp -ru css/ img/ index.html node_modules/bootstrap/dist/* build/"
   }
 }
 
