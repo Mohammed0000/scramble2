@@ -1,5 +1,4 @@
-Scramble 2
-===
+# Scramble 2
 
 This is my second attempt at making an encrypted email client.
 
@@ -11,4 +10,17 @@ The original, scramble.io, is still around. I still use it every day. Not a lot 
   Scramble 2 is a local install.
   
  
+## Running
+
+The process to run from source in Atom-Shell is still a bit janky.
+
+* Install node and npm
+* Install node-gyp: `sudo npm install node-gyp -g`
+* Download aspm
+* Install node-sqlite3 `aspm install sqlite3 --tarball https://github.com/mapbox/node-sqlite3/archive/master.tar.gz --target 0.20.6 --arch x64`
+* Run `npm install`
+* Run `npm start`
+* Download [atom-shell](https://github.com/atom/atom-shell) to the directory next to scramble2
+* From the scramble2 directory, run `../atom-shell/atom .`
+
 
