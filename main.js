@@ -1,9 +1,9 @@
+var path = require('path');
+var ipc = require('ipc');
 var Keybase = require("node-keybase");
 var App = require("app");
 var BrowserWindow = require("browser-window");
-//TODO: difficult because MailRepo relies on native modules for sqlite3,
-// and atom-shell runs a different version of V8 than standard Node: https://github.com/atom/atom-shell/issues/533
-//var ScrambleMailRepo = require("scramble-mail-repo"); 
+var ScrambleMailRepo = require("scramble-mail-repo"); 
 
 var mainWindow = null;
 
@@ -13,26 +13,25 @@ App.on("window-all-closed", App.quit.bind(App));
 // Wait for atom-shell to initialize
 App.commandLine.appendSwitch('js-flags', '--harmony');
 App.on("ready", function() {
-  console.log(process.version);
+  console.log("Starting Scramble. process.version is "+process.version);
 
   mainWindow = new BrowserWindow({"width":1000,"height":700});
   mainWindow.loadUrl("file://" + __dirname + "/build/index.html");
   mainWindow.openDevTools();
 
-  demoMailRepo();
-  demoKeybase();
+  mainWindow.webContents.on('did-finish-load', function() {
+    demoMailRepo();
+    demoKeybase();
+  });
 });
-
-
 
 // Demo: searchable mail repo
 function demoMailRepo() {
-  // TODO: make sqlite3 build for atom-shell
-  return;
-  var mailRepo = new ScrambleMailRepo("~/scramble-test-dir");
+  var mailRepo = new ScrambleMailRepo(path.join(process.env.HOME, "scramble-test-dir"));
   mailRepo.search("hello", function(err, msgs){
-    //inbox.setState("messages", msgs);
-    mailWindow.webContents.send("test", msgs);
+    if (err) return console.error(err);
+    console.log("Sending "+msgs.length+" msgs from browser to renderer");
+    mainWindow.webContents.send("inbox", msgs);
   });
 };
 
@@ -44,11 +43,11 @@ function demoKeybase() {
     console.log("To test Keybase: node <...> <keybase user> <keybase passphrase>");
   } else {
     var keybase = new Keybase(keybaseUser, keybasePassphrase);
-    keybase.user_autocomplete('fe', function(err, result){
+    keybase.user_autocomplete('dc', function(err, result){
       if(err){
         return console.warn("Keybase autocomplete error", err);
       }
-      console.log(result);
+      console.log('Autocomplete', result);
     });
     keybase.login(function(err, result){
       if(err){

@@ -12,7 +12,7 @@
     "scramble-mail-repo": "*"
   },
   "scripts": {
-    "start": "npm run copy && jsx --harmony jsx/ build/",
+    "preinstall": "npm run copy && jsx --harmony jsx/ build/",
     "copy": "mkdir -p build/ && cp -ru css/ img/ index.html node_modules/bootstrap/dist/* build/"
   }
 }

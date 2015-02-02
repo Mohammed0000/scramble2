@@ -4,45 +4,65 @@ var Tabs = ScrambleUI.Tabs;
 var SearchList = ScrambleUI.SearchList;
 
 module.exports = React.createClass({
+  displayName: "Inbox",
+
+  propTypes: {
+    searchMessages: React.PropTypes.func.isRequired,
+    loadMessageCleanHTML: React.PropTypes.func.isRequired
+  },
+
   getInitialState: function(){
-    return {messages:[], selectedMessage:null};
+    return {messages:[],selectedMessageCleanHTML:null};
   },
-  searchMessages: function(query, cb) {
-    return [
-      "Foo Bar",
-      "Foo Baz",
-      "Foo Bam",
-      "Yo",
-      "Sup?"
-    ];
+
+  searchMessages: function(query) {
+    var self = this;
+    this.props.searchMessages(query, function(err, msgs){
+      if(err){
+        console.error("Could not load messages", err);
+      }
+      self.setState({
+        messages: msgs
+      });
+    });
   },
-  renderMessage: function(messageId) {
-    return (
-    <div>{messageId}</div>);
+  selectMessage: function(scrambleMailId) {
+    this.setState({
+      selectedMessageCleanHTML: this.props.loadMessageCleanHTML(scrambleMailId)
+    });
   },
-  selectMessage: function(message) {
-    console.log(message);
+  getMessageID: function(message) {
+    return message.scrambleMailId;
+  },
+  renderMessage: function(message) {
+    return (<div>{message.subject}</div>);
   },
   render: function() {
     var msgs = this.state.messages;
-    var selectedMsg = this.state.selectedMessage;
+    var cleanHTML = this.state.selectedMessageCleanHTML;
 
     return (
-    <div>
-      <Tabs tabs={["Inbox", "Outbox", "Contacts"]} /> 
-      <div className="container">
-        <div className="row">
-          <div className="col-md-4">
-            <SearchList searchFunc={this.searchMessages} elementFunc={this.renderMessage} onSelect={this.selectMessage} />
-          </div>
-          <div className="col-md-8">
-            <pre>
-              {JSON.stringify(selectedMsg)}
-            </pre>
+      <div>
+        <Tabs tabs={["Inbox", "Outbox", "Contacts"]} /> 
+        <div className="container">
+          <div className="row">
+            <div className="col-md-4">
+              <SearchList 
+                data={this.state.messages} 
+                elementFunc={this.renderMessage} 
+                keyFunc={this.getMessageID} 
+                onSelect={this.selectMessage}
+                onSearch={this.searchMessages}/>
+            </div>
+            <div className="col-md-8">
+              <div 
+                className="mail-body" 
+                dangerouslySetInnerHTML={{__html: cleanHTML}}>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>);
+      </div>);
   }
 });
 
