@@ -6,6 +6,7 @@
   "main":"main.js",
   "dependencies": {
     "react": "*",
+    "react-bootstrap": "*",
     "bootstrap": "*",
     "node-keybase": "*",
     "scramble-ui": "*",

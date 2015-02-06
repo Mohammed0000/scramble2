@@ -5,12 +5,33 @@ var React = require("react");
 var Login = require("./Login");
 var Inbox = require("./Inbox");
 
+var App = React.createClass({
+  getInitialState: function(){
+    return {
+      screen: "login"
+    };
+  },
+  onLogin: function(result){
+    alert("Successfully logged in with Keybase");
+    console.log(result);
+  },
+  render: function() {
+    if(this.state.screen === 'inbox') {
+      return (<Inbox searchMessages={searchMessages} loadMessageCleanHTML={loadCleanHTML}/>);
+    } else if (this.state.screen === 'login') {
+      return (<Login onLogin={this.onLogin} />);
+    } else {
+      throw "Invalid state "+this.state.screen;
+    }
+  }
+});
+
+React.render(<App />, document.body);
+
+
 // Remoted APIs
 var ScrambleMailRepo = remote.require("scramble-mail-repo");
 var mailRepo = new ScrambleMailRepo(path.join(process.env.HOME, "scramble-test-dir"));
-
-var inbox = (<Inbox searchMessages={searchMessages} loadMessageCleanHTML={loadCleanHTML}/>);
-React.render(inbox, document.body);
 
 // TODO: remove
 ipc.on('inbox', function(data) {
@@ -26,7 +47,7 @@ function searchMessages(query, cb){
 }
 
 function loadCleanHTML(scrambleMailId){
-  // TODO: read from disk, use MailParser, than use CAJA to sanitize HTML
+  // TODO: read from disk, use MailParser, then use CAJA to sanitize HTML
   // TODO: refactor to use a callback rather than returning directly
   for(var i = 0; i < messages.length; i++){
     var message = messages[i];
