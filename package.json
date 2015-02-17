@@ -12,10 +12,12 @@
     "scramble-ui": "*",
     "scramble-mail-repo": "*"
   },
+  "devDependencies": {
+    "standard": "*"
+  }, 
   "scripts": {
-    "preinstall": "npm run copy && jsx --harmony jsx/ build/",
-    "copy": "mkdir -p build/ && cp -ru css/ img/ index.html node_modules/bootstrap/dist/* build/"
+    "postinstall": "npm run copy && jsx --harmony jsx/ build/",
+    "copy": "mkdir -p build/ && cp -ru css/ img/ index.html node_modules/bootstrap/dist/* build/",
+    "test": "standard"
   }
 }
-
-
