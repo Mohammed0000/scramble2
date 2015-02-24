@@ -13,6 +13,7 @@
     "scramble-mail-repo": "*"
   },
   "devDependencies": {
+    "react-tools": "*",
     "standard": "*"
   }, 
   "scripts": {
