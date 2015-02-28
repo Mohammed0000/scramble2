@@ -8,16 +8,40 @@ var Inbox = require("./Inbox");
 var App = React.createClass({
   getInitialState: function(){
     return {
-      screen: "login"
+      screen: "login",
+      keybase: null
     };
   },
   onLogin: function(result){
     alert("Successfully logged in with Keybase");
-    console.log(result);
+    // Here's an excerpt of the interesting things in `result`:
+    //
+    // .me - a Keybase user object https://keybase.io/docs/api/1.0/user_objects
+    // .me.id
+    // .me.basics.username
+    // .me.profile.full_name
+    // .me.emails.primary.email
+    // .me.public_keys.primary.kid
+    // .me.public_keys.primary.key_fingerprint
+    // .me.public_keys.primary.bundle
+    // .me.private_keys.primary
+    // .me.invitation_stats.available
+    //
+    // .session
+    // .csrf_token
+    // .guest_id
+    this.setState({
+      screen: "inbox",
+      keybase: result
+    });
   },
   render: function() {
     if(this.state.screen === 'inbox') {
-      return (<Inbox searchMessages={searchMessages} loadMessageCleanHTML={loadCleanHTML}/>);
+      alert("Rendering inbox");
+      return (<Inbox 
+        accounts={[]}
+        searchMessages={searchMessages} 
+        loadMessageCleanHTML={loadCleanHTML} />);
     } else if (this.state.screen === 'login') {
       return (<Login onLogin={this.onLogin} />);
     } else {

@@ -7,12 +7,17 @@ module.exports = React.createClass({
   displayName: "Inbox",
 
   propTypes: {
+    accounts: React.PropTypes.array.isRequired,
     searchMessages: React.PropTypes.func.isRequired,
     loadMessageCleanHTML: React.PropTypes.func.isRequired
   },
 
   getInitialState: function(){
-    return {messages:[],selectedMessageCleanHTML:null};
+    return {
+      selectedAccount: this.props.accounts[0] || null,
+      messages: [],
+      selectedMessageCleanHTML: null
+    };
   },
 
   searchMessages: function(query) {
@@ -41,27 +46,43 @@ module.exports = React.createClass({
     var msgs = this.state.messages;
     var cleanHTML = this.state.selectedMessageCleanHTML;
 
+    var contentElem = this.selectedAccount === null ? renderWelcome() : renderInboxState();
+    var keybaseUsername = "bob";
+
     return (
       <div>
         <Tabs tabs={["Inbox", "Outbox", "Contacts"]} /> 
         <div className="container">
           <div className="row">
             <div className="col-md-4">
+              <p>Welcome, {keybaseUsername}!</p>
               <SearchList 
                 data={this.state.messages} 
                 elementFunc={this.renderMessage} 
                 keyFunc={this.getMessageID} 
                 onSelect={this.selectMessage}
                 onSearch={this.searchMessages}/>
+              <p>Add Account</p>
             </div>
             <div className="col-md-8">
-              <div 
-                className="mail-body" 
-                dangerouslySetInnerHTML={{__html: cleanHTML}}>
-              </div>
+              {contentElem}
             </div>
           </div>
         </div>
+      </div>);
+  },
+  renderWelcome: function() {
+    return (
+      <div>
+        <h1>Welcome to Scramble!</h1>
+        <p>To get started, click Add Account.</p>
+      </div>);
+  },
+  renderInboxState: function() {
+    return (
+      <div>
+        <h1>Inbox Zero. Congrats!</h1>
+        <p>TODO: check whether it is actually inbox zero. Display stats.</p>
       </div>);
   }
 });
