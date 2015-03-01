@@ -9,7 +9,6 @@
     "react-bootstrap": "*",
     "bootstrap": "*",
     "node-keybase": "*",
-    "scramble-ui": "*",
     "scramble-mail-repo": "*"
   },
   "devDependencies": {

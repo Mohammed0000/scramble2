@@ -1,7 +1,6 @@
 var React = require("react");
-var ScrambleUI = require("scramble-ui");
-var Tabs = ScrambleUI.Tabs;
-var SearchList = ScrambleUI.SearchList;
+var Tabs = require("./Tabs");
+var SearchList = require("./SearchList");
 
 module.exports = React.createClass({
   displayName: "Inbox",
@@ -46,7 +45,7 @@ module.exports = React.createClass({
     var msgs = this.state.messages;
     var cleanHTML = this.state.selectedMessageCleanHTML;
 
-    var contentElem = this.selectedAccount === null ? renderWelcome() : renderInboxState();
+    var contentElem = this.state.selectedAccount === null ? this.renderWelcome() : this.renderInboxState();
     var keybaseUsername = "bob";
 
     return (
