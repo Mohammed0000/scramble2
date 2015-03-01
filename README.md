@@ -14,14 +14,16 @@ The original, scramble.io, is still around. I still use it every day. Not a lot 
 
 The process to run from source in Atom-Shell is still a bit janky.
 
+* Clone scramble2
 * Install node and npm
 * (If you're on Ubuntu, `sudo apt-get install libgnome-keyring-dev`)
-* Install node-gyp, aspm, and apm: `sudo npm install -g node-gyp aspm atom-package-manager@0.130.0`
+* Install jsx, node-gyp, aspm, and apm: `sudo npm install -g react-tools node-gyp aspm atom-package-manager@0.130.0`
+* Create an `atom-shell` directory next to the scramble2 directory
+* Download and unzip [atom-shell 0.20.0](https://github.com/atom/atom-shell/releases/tag/v0.20.0) inside of `atom-shell`
+
+From inside the scramble2 directory:
 * Install node-sqlite3 `aspm install sqlite3 --tarball https://github.com/mapbox/node-sqlite3/archive/master.tar.gz --target 0.20.0 --arch x64`
   (Ignore the warnings.)
 * Run `apm install`
-* Create an `atom-shell` directory next to the scramble2 directory
-* Download and unzip [atom-shell 0.20.0](https://github.com/atom/atom-shell/releases/tag/v0.20.0) into `atom-shell`
-* From the scramble2 directory, run `../atom-shell/atom .`
-
-
+* Run `npm install`
+* Run `../atom-shell/atom .`
