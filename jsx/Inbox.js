@@ -1,9 +1,11 @@
-var React = require("react");
-var Tabs = require("./Tabs");
-var SearchList = require("./SearchList");
+var React = require('react');
+var BS = require('react-bootstrap')
+var AddAccountModal = require('./AddAccountModal')
+var Tabs = require('./Tabs');
+var SearchList = require('./SearchList');
 
 module.exports = React.createClass({
-  displayName: "Inbox",
+  displayName: 'Inbox',
 
   propTypes: {
     accounts: React.PropTypes.array.isRequired,
@@ -19,11 +21,16 @@ module.exports = React.createClass({
     };
   },
 
+  onAddAccount: function() {
+    // Show the Add Account view
+    console.log('Showing Add Account screen...') 
+  },
+
   searchMessages: function(query) {
     var self = this;
     this.props.searchMessages(query, function(err, msgs){
       if(err){
-        console.error("Could not load messages", err);
+        console.error('Could not load messages', err);
       }
       self.setState({
         messages: msgs
@@ -46,14 +53,14 @@ module.exports = React.createClass({
     var cleanHTML = this.state.selectedMessageCleanHTML;
 
     var contentElem = this.state.selectedAccount === null ? this.renderWelcome() : this.renderInboxState();
-    var keybaseUsername = "bob";
+    var keybaseUsername = 'bob';
 
     return (
       <div>
-        <Tabs tabs={["Inbox", "Outbox", "Contacts"]} /> 
-        <div className="container">
-          <div className="row">
-            <div className="col-md-4">
+        <Tabs tabs={['Inbox', 'Outbox', 'Contacts']} /> 
+        <div className='container'>
+          <div className='row'>
+            <div className='col-md-4'>
               <p>Welcome, {keybaseUsername}!</p>
               <SearchList 
                 data={this.state.messages} 
@@ -61,9 +68,14 @@ module.exports = React.createClass({
                 keyFunc={this.getMessageID} 
                 onSelect={this.selectMessage}
                 onSearch={this.searchMessages}/>
-              <p>Add Account</p>
+  
+              <footer className='footer'>
+                <BS.ModalTrigger modal={<AddAccountModal />}>
+                  <BS.Button bsStyle='primary' onClick={this.onAddAccount}>Add Account</BS.Button>
+                </BS.ModalTrigger>
+              </footer>
             </div>
-            <div className="col-md-8">
+            <div className='col-md-8'>
               {contentElem}
             </div>
           </div>
