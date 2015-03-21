@@ -2,7 +2,10 @@ var React = require('react')
 var BS = require('react-bootstrap')
 
 module.exports = React.createClass({
-  className: 'AddAccountModal',
+  displayName: 'AddAccountModal',
+  propTypes: {
+    onRequestHide: React.PropTypes.func
+  },
   render: function () {
     return (
       <BS.Modal {...this.props} bsStyle='primary' title='Modal heading' animation={false}>
@@ -29,4 +32,3 @@ module.exports = React.createClass({
     )
   }
 })
-
