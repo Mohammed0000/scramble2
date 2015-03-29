@@ -6,24 +6,35 @@ module.exports = React.createClass({
   propTypes: {
     onRequestHide: React.PropTypes.func
   },
+  onAddAccount: function() {
+    var username = this.refs.gmailUsername.value
+    var password = this.refs.gmailPassword.value
+
+    console.log("Adding user: %s %s", username, password)
+  },
   render: function () {
     return (
-      <BS.Modal {...this.props} bsStyle='primary' title='Modal heading' animation={false}>
+      <BS.Modal {...this.props} bsStyle='primary' title='Add Account' animation={false}>
         <div className='modal-body'>
-          <h4>Add Account</h4>
-
+          <h4>Connect to an email account via IMAP</h4>
           <hr />
 
-          <h4>Overflowing text to show scroll behavior</h4>
-          <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-          <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-          <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-          <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-          <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-          <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-          <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-          <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-          <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+          <p>
+            <BS.ButtonGroup>
+              <BS.Button>Gmail</BS.Button>
+              <BS.Button>Other IMAP</BS.Button>
+            </BS.ButtonGroup>
+          </p>
+
+          <form className='form-horizontal'>
+            <BS.Input type='text' ref='gmailUsername' label='Email address' labelClassName='col-sm-2' wrapperClassName='col-sm-10' />
+            <BS.Input type='password' ref='gmailPassword' label='Password' labelClassName='col-sm-2' wrapperClassName='col-sm-10' />
+            <small className='col-sm-10 col-sm-offset-2'>
+              You credentials will only ever be sent to Google over HTTPS and are only used to sync messages. 
+              Google won't be able to read your encrypted mail.
+            </small>
+            <BS.Button bsStyle='primary' onClick={this.onAddAccount}>Add Account</BS.Button>
+          </form>
         </div>
         <div className='modal-footer'>
           <BS.Button onClick={this.props.onRequestHide}>Close</BS.Button>
