@@ -9,15 +9,18 @@
     "react-bootstrap": "*",
     "bootstrap": "*",
     "node-keybase": "*",
-    "scramble-mail-repo": "*"
+    "scramble-mail-repo": "*",
+    "scramble-imap": "*",
+    "object-assign": "*"
   },
   "devDependencies": {
     "react-tools": "*",
-    "standard": "*"
+    "standard": "*",
+    "atom-watcher": "*"
   }, 
   "scripts": {
-    "postinstall": "npm run copy && jsx --harmony jsx/ build/",
-    "copy": "mkdir -p build/ && cp -ru css/ img/ index.html node_modules/bootstrap/dist/* build/",
-    "test": "standard main.js && standard jsx/*.jsx"
+    "postinstall": "npm run copy && jsx --extension jsx --harmony views/ build/views",
+    "copy": "mkdir -p build/ && cp -ru css/ img/ stores/ actions/ index.html app.js node_modules/bootstrap/dist/* build/",
+    "test": "standard *.js stores/* actions/* views/*"
   }
 }

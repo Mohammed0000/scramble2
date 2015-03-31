@@ -3,11 +3,13 @@ var BS = require('react-bootstrap')
 var AddAccountModal = require('./AddAccountModal')
 var Tabs = require('./Tabs')
 var SearchList = require('./SearchList')
+var StatusBar = require('./StatusBar')
 
 module.exports = React.createClass({
   displayName: 'Inbox',
 
   propTypes: {
+    keybaseSession: React.PropTypes.object.isRequired,
     accounts: React.PropTypes.array.isRequired,
     searchMessages: React.PropTypes.func.isRequired,
     loadMessageCleanHTML: React.PropTypes.func.isRequired
@@ -37,22 +39,26 @@ module.exports = React.createClass({
       })
     })
   },
+
   selectMessage: function (scrambleMailId) {
     this.setState({
       selectedMessageCleanHTML: this.props.loadMessageCleanHTML(scrambleMailId)
     })
   },
+
   getMessageID: function (message) {
     return message.scrambleMailId
   },
+
   renderMessage: function (message) {
     return (<div>{message.subject}</div>)
   },
+
   render: function () {
     var contentElem = (this.state.selectedAccount === null ?
         this.renderWelcome() :
         this.renderInboxState())
-    var keybaseUsername = 'bob'
+    var keybaseUsername = this.props.keybaseSession.me.id
 
     return (
       <div>
@@ -79,8 +85,11 @@ module.exports = React.createClass({
             </div>
           </div>
         </div>
+
+        <StatusBar />
       </div>)
   },
+
   renderWelcome: function () {
     return (
       <div>
@@ -88,6 +97,7 @@ module.exports = React.createClass({
         <p>To get started, click Add Account.</p>
       </div>)
   },
+
   renderInboxState: function () {
     return (
       <div>

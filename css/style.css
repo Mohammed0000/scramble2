@@ -123,3 +123,12 @@ body {
     content:"Show";
 }
 
+
+/*
+ * STATUS FOOTER
+ */
+.status-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}

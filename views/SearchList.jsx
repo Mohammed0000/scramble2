@@ -83,9 +83,9 @@ module.exports = React.createClass({
             <BS.Button onClick={leftDisabled ? null : this.onPageLeft} bsStyle='link' bsSize='small' disabled={leftDisabled}>
               <i className='glyphicon glyphicon-chevron-left'></i>
             </BS.Button>
-            &nbsp;&nbsp
+            &nbsp;&nbsp;
             Showing {ixMin + 1} to {ixMax} of {dataLen}
-            &nbsp;&nbsp
+            &nbsp;&nbsp;
             <BS.Button onClick={rightDisabled ? null : this.onPageRight} bsStyle='link' bsSize='small' disabled={rightDisabled}>
               <i className='glyphicon glyphicon-chevron-right'></i>
             </BS.Button>
