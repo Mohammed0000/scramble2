@@ -3,63 +3,64 @@
  */
 
 var EventEmitter = require('events').EventEmitter
+var objectAssign = require('object-assign')
 
 var loginState = {
   wrongUsername: false,
   wrongPassphrase: false,
   error: null
 }
-var keybase = null
 
-module.exports = {
+var keybaseSession = null
 
-  emitChange: function() {
+module.exports = objectAssign({}, EventEmitter.prototype, {
+  emitChange: function () {
     this.emit('change')
   },
 
   /**
    * Returns the login state, in the form {loggedInAs, wrongUsername, wrongPassword, error}
    * where the first two are boolean and `error` is a clean error message.
-   * 
+   *
    * If getKeybaseAccount() is not null, then the login was successful.
    */
-  getLoginState: function() {
+  getLoginState: function () {
     return loginState
   },
 
-    /**
-     *  Here's an excerpt of the interesting things in the Keybase login result:
-     *
-     * .me - a Keybase user object https://keybase.io/docs/api/1.0/user_objects
-     * .me.id
-     * .me.basics.username
-     * .me.profile.full_name
-     * .me.emails.primary.email
-     * .me.public_keys.primary.kid
-     * .me.public_keys.primary.key_fingerprint
-     * .me.public_keys.primary.bundle
-     * .me.private_keys.primary
-     * .me.invitation_stats.available
-     *
-     * .session
-     * .csrf_token
-     * .guest_id
-     */
-  getKeybaseSession: function() {
+  /**
+   *  Here's an excerpt of the interesting things in the Keybase login result:
+   *
+   * .me - a Keybase user object https://keybase.io/docs/api/1.0/user_objects
+   * .me.id
+   * .me.basics.username
+   * .me.profile.full_name
+   * .me.emails.primary.email
+   * .me.public_keys.primary.kid
+   * .me.public_keys.primary.key_fingerprint
+   * .me.public_keys.primary.bundle
+   * .me.private_keys.primary
+   * .me.invitation_stats.available
+   *
+   * .session
+   * .csrf_token
+   * .guest_id
+   */
+  getKeybaseSession: function () {
     return keybaseSession
   },
 
-  setSuccessfulLogin: function(keybaseLoginResult) {
+  setSuccessfulLogin: function (keybaseLoginResult) {
     loginState = {
       wrongUsername: false,
       wrongPassphrase: false,
       error: null
     }
-    keybaseSession = keybaseLoginResult 
+    keybaseSession = keybaseLoginResult
     this.emitChange()
   },
 
-  setWrongUsername: function() {
+  setWrongUsername: function () {
     loginState = {
       wrongUsername: true,
       wrongPassphrase: false,
@@ -68,7 +69,7 @@ module.exports = {
     this.emitChange()
   },
 
-  setWrongPassphrase: function() {
+  setWrongPassphrase: function () {
     loginState = {
       wrongUsername: false,
       wrongPassphrase: true,
@@ -77,15 +78,14 @@ module.exports = {
     this.emitChange()
   },
 
-  setOtherLoginError: function(message) {
+  setOtherLoginError: function (message) {
     loginState = {
       wrongUsername: false,
       wrongPassphrase: false,
       error: message
     }
     this.emitChange()
-  } 
-}
+  }
+})
 
-module.exports.__proto__ = EventEmitter.prototype
 EventEmitter.call(module.exports)

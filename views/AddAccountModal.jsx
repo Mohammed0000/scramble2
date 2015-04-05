@@ -10,40 +10,40 @@ module.exports = React.createClass({
     onRequestHide: React.PropTypes.func
   },
 
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       inProgress: false,
       errorMessage: null
     }
   },
 
-  componentDidMount: function() {
+  componentDidMount: function () {
     IMAPStore.addListener('change', this.onIMAPStoreChange)
   },
 
-  componentWillUnmount: function() {
+  componentWillUnmount: function () {
     IMAPStore.removeListener('change', this.onIMAPStoreChange)
   },
 
-  onIMAPStoreChange: function() {
-    var errorMessage = IMAPStore.getAddAccountErrorMessage()  
+  onIMAPStoreChange: function () {
+    var errorMessage = IMAPStore.getAddAccountErrorMessage()
     var inProgress = this.state.inProgress
     this.setState({
       errorMessage: errorMessage,
       inProgress: false
     })
-    if(inProgress && !errorMessage) {
+    if (inProgress && !errorMessage) {
       // Account added successfully
       console.log('Account added successfully, closing Add Account modal')
       this.props.onRequestHide()
     }
   },
 
-  onAddAccount: function() {
+  onAddAccount: function () {
     var username = this.refs.gmailUsername.getValue()
     var password = this.refs.gmailPassword.getValue()
 
-    console.log("Adding Gmail account: %s %s", username, password)
+    console.log('Adding Gmail account: %s %s', username, password)
     this.setState({inProgress: true})
     IMAPActions.addGmailAccount(username, password)
   },
@@ -69,7 +69,7 @@ module.exports = React.createClass({
             <div className='form-group'>
               <div className='col-sm-9 col-sm-offset-2'>
                 <small>
-                  You credentials will only ever be sent to Google over HTTPS and are only used to sync messages. 
+                  You credentials will only ever be sent to Google over HTTPS and are only used to sync messages.
                   Google won't be able to read your encrypted mail.
 
                   If you use two-factor auth, you'll need to <a href="https://security.google.com/settings/security/apppasswords">create an app password</a>.

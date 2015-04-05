@@ -7,10 +7,11 @@ var keybase = new Keybase()
  * All actions related to logging in with Keybase or creating a Keybase account.
  */
 module.exports = {
-
-  login: function(username, passphrase) {
+  login: function (username, passphrase) {
     // TODO: remove, just here to test without internet
-    return KeybaseStore.setSuccessfulLogin({me:{id:username}})
+    if (username === 'test') {
+      return KeybaseStore.setSuccessfulLogin({me: {id: username}})
+    }
     keybase.login(username, passphrase, function (err, result) {
       if (err) {
         console.error(err)
@@ -29,5 +30,4 @@ module.exports = {
       }
     })
   }
-
 }

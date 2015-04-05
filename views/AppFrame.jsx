@@ -24,7 +24,7 @@ module.exports = React.createClass({
 
   componentWillUnmount: function () {
     KeybaseStore.addListener('change', this.onKeybaseStoreChanged)
-  }, 
+  },
 
   onKeybaseStoreChanged: function () {
     var keybaseSession = KeybaseStore.getKeybaseSession()
@@ -41,7 +41,7 @@ module.exports = React.createClass({
       return (<Inbox
         accounts={[]}
         searchMessages={searchMessages}
-        loadMessageCleanHTML={loadCleanHTML} 
+        loadMessageCleanHTML={loadCleanHTML}
         keybaseSession={this.state.keybaseSession} />)
     } else if (this.state.screen === 'login') {
       return (<Login />)

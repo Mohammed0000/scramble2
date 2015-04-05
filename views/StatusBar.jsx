@@ -26,11 +26,11 @@ module.exports = React.createClass({
     IMAPStore.removeListener('change', this.onIMAPStoreChange)
   },
 
-  onIMAPStoreChange: function() {
+  onIMAPStoreChange: function () {
     this.setState(this.getInitialState())
   },
 
-  render: function() {
+  render: function () {
     var totals = this.state.syncStateTotals
     var totalToSync = totals.numToDownload + totals.numToUpload
     var totalSynced = totals.numDownloaded + totals.numUploaded

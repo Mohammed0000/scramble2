@@ -29,10 +29,10 @@ module.exports = React.createClass({
       inProgress: false
     }
     this.setState(state)
-    if(state.wrongUsername) {
-        this.refs.username.getDOMNode().children[0].focus()
+    if (state.wrongUsername) {
+      this.refs.username.getDOMNode().children[0].focus()
     } else if (state.wrongPassphrase) {
-        this.refs.password.getDOMNode().children[0].focus()
+      this.refs.password.getDOMNode().children[0].focus()
     }
   },
 
@@ -47,7 +47,7 @@ module.exports = React.createClass({
   },
 
   handleCreateAccount: function () {
-    throw 'Unimplemented'
+    throw new Error('Unimplemented')
   },
 
   render: function () {

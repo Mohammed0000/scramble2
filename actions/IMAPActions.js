@@ -7,13 +7,12 @@ var remoteScrambleIMAP = remote.require('scramble-imap')
  * All actions related to IMAP accounts.
  */
 module.exports = {
-
-  addGmailAccount: function(username, password) {
+  addGmailAccount: function (username, password) {
     // Try connecting to the account to download mail
     var emailAddress = /@/.test(username) ? username : (username + '@gmail.com')
     var imap = remoteScrambleIMAP.createForGmail(emailAddress, password)
     imap.fetchAll()
-    
+
     // Example inboxStats
     // {
     //   "name":"[Gmail]/All Mail",
@@ -32,7 +31,7 @@ module.exports = {
     //   },
     //   "highestmodseq":"21890643"
     // }
-    imap.on('box', function(inboxStats) {
+    imap.on('box', function (inboxStats) {
       // Connected successfully. Add this account to our list of accounts
       console.log('Connected successfully. Inbox stats: ' + JSON.stringify(inboxStats))
       // TODO: tell remote to store this IMAP account
@@ -45,10 +44,10 @@ module.exports = {
       IMAPStore.setSyncState(emailAddress, {numToDownload: numMsgs})
     })
 
-    imap.on('error', function(err) {
+    imap.on('error', function (err) {
       var message
       if (err.source === 'timeout') {
-        message = 'Can\'t connect to the IMAP server. Are you offline?'
+        message = "Can't connect to the IMAP server. Are you offline?"
       } else if (err.source === 'authentication') {
         message = 'Wrong username or password'
       } else {
@@ -58,17 +57,17 @@ module.exports = {
     })
 
     var numDownloaded = 0
-    imap.on('message', function(msg) {
+    imap.on('message', function (msg) {
       console.log('Got message! ' + JSON.stringify(msg.attributes))
       IMAPStore.setSyncState(emailAddress, {numDownloaded: ++numDownloaded})
     })
   },
 
-  addIMAPAccount: function(server, port, username, password) {
-    throw 'Unimplemented'
+  addIMAPAccount: function (server, port, username, password) {
+    throw new Error('Unimplemented')
   },
 
-  removeAccount: function(accountID) {
-    throw 'Unimplemented'
+  removeAccount: function (accountID) {
+    throw new Error('Unimplemented')
   }
 }
