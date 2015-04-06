@@ -1,6 +1,35 @@
 var React = require('react')
 var IMAPStore = require('../stores/IMAPStore')
 var BS = require('react-bootstrap')
+var objectAssign = require('object-assign')
+
+
+// Component-specific styles applied as inline style & defined in JS.
+// Rationale described here: https://speakerdeck.com/vjeux/react-css-in-js
+// If needed, things like the colors could be turned into props.
+var styles = {
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 35,
+    backgroundColor: '#f8f8f8',
+    borderTop: '1px solid #e7e7e7'
+  },
+  label: {
+    padding: '10px 15px',
+    margin: 0,
+    fontSize: '0.8em',
+    color: '#666'
+  },
+  progressLine: {
+    backgroundColor: '#337ab7',
+    position: 'absolute',
+    top: -1, // should be -(border width), see above
+    left: 0,
+    height: 3
+  }
+}
 
 /**
  * Status bar shows IMAP sync state, # unread messages, and so on
@@ -31,28 +60,33 @@ module.exports = React.createClass({
   },
 
   render: function () {
+    var numAccounts = this.state.numAccounts
     var totals = this.state.syncStateTotals
     var totalToSync = totals.numToDownload + totals.numToUpload
     var totalSynced = totals.numDownloaded + totals.numUploaded
 
+    // Compute the status bar text and the progress percentage
+    // (Progress is displayed as a thicker line over the top border of the footer)
     var contents
-    if (this.state.numAccounts === 0) {
+    var percent = 0
+    if (numAccounts === 0) {
       contents = 'No accounts yet'
     } else if (totalSynced >= totalToSync) {
       contents = 'All synced :)'
     } else {
-      var percent = totalSynced / totalToSync * 100
-      var text = totals.numDownloaded < totals.numToDownload ?
-        (totals.numDownloaded + '/' + totals.numToDownload + ' downloaded') :
-        (totals.numUploaded + '/' + totals.numToUpload + ' sent')
-      contents = (<BS.ProgressBar now={percent} label={text} />)
+      percent = totalSynced / totalToSync * 100
+      percent = Math.max(percent, 2)
+      contents = totals.numUploaded < totals.numToUpload ?
+        (totals.numUploaded + ' / ' + totals.numToUpload + ' sent') :
+        (totals.numDownloaded + ' / ' + totals.numToDownload + ' downloaded')
     }
 
+    var progressLineStyle = objectAssign({}, styles.progressLine, {width: (percent + '%')})
+
     return (
-      <footer className="status-footer">
-        <div className="container">
-          {contents}
-        </div>
+      <footer style={styles.footer}>
+        <div className="progress-line" style={progressLineStyle} />
+        <p style={styles.label}>{contents}</p>
       </footer>
     )
   }

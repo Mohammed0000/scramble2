@@ -14,7 +14,7 @@ App.commandLine.appendSwitch('js-flags', '--harmony')
 App.on('ready', function () {
   console.log('Starting Scramble. process.version is ' + process.version)
 
-  mainWindow = new BrowserWindow({'width': 1000, 'height': 700})
+  mainWindow = new BrowserWindow({'width': 1200, 'height': 900})
   mainWindow.loadUrl('file://' + __dirname + '/build/index.html')
   mainWindow.openDevTools()
 
