@@ -8,10 +8,10 @@
 var EventEmitter = require('events').EventEmitter
 var objectAssign = require('object-assign')
 
-var accounts = []
-var accountsByEmailAddress = {}
-var addAccountErrorMessage = null
-var accountSyncState = {}
+var _accounts = []
+var _accountsByEmailAddress = {}
+var _addAccountErrorMessage = null
+var _accountSyncState = {}
 
 module.exports = objectAssign({}, EventEmitter.prototype, {
   AccountType: {
@@ -24,63 +24,72 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   },
 
   getAccounts: function () {
-    return accounts
+    return _accounts
   },
 
   getAddAccountErrorMessage: function () {
-    return addAccountErrorMessage
+    return _addAccountErrorMessage
   },
 
-  addAccount: function (account) {
-    if (!this.AccountType[account.type] ||
-      !account.emailAddress) {
-      throw 'Invalid account: ' + JSON.stringify(account)
-    }
-    if (accountsByEmailAddress[account.emailAddress]) {
-      throw 'Account ' + account.emailAddress + ' already exists'
-    }
-    accounts.push(account)
-    accountsByEmailAddress[account.emailAddress] = account
-
-    accountSyncState[account.emailAddress] = {
-      numToDownload: 0,
-      numDownloaded: 0,
-      numToUpload: 0,
-      numUploaded: 0
-    }
-
+  setAccounts: function (accounts) {
+    _accounts = []
+    _accountsByEmailAddress = {}
+    accounts.forEach(this._addAccount.bind(this))
     this.emitChange()
   },
 
+  addAccount: function (account) {
+    this._addAccount(account)
+    this.emitChange()
+  },
+
+  _addAccount: function (account) {
+    if (!this.AccountType[account.type] || !account.emailAddress) {
+      throw 'Invalid account: ' + JSON.stringify(account)
+    }
+    if (_accountsByEmailAddress[account.emailAddress]) {
+      throw 'Account ' + account.emailAddress + ' already exists'
+    }
+    _accounts.push(account)
+    _accountsByEmailAddress[account.emailAddress] = account
+  },
+
   setAddAccountErrorMessage: function (message) {
-    addAccountErrorMessage = message
+    _addAccountErrorMessage = message
     this.emitChange()
   },
 
   getSyncState: function (emailAddress) {
-    return accountSyncState[emailAddress]
+    return _accountSyncState[emailAddress]
   },
 
   getSyncStateTotals: function () {
-    return accounts.map(function (account) {
-      return accountSyncState[account.emailAddress]
+    return _accounts.map(function (account) {
+      return _accountSyncState[account.emailAddress]
     }).reduce(function (a, b) {
       return {
         numToDownload: a.numToDownload + b.numToDownload,
         numDownloaded: a.numDownloaded + b.numDownloaded,
+        numIndexed: a.numIndexed + b.numIndexed,
         numToUpload: a.numToUpload + b.numToUpload,
         numUploaded: a.numUploaded + b.numUploaded
       }
     }, {
       numToDownload: 0,
       numDownloaded: 0,
+      numIndexed: 0,
       numToUpload: 0,
       numUploaded: 0
     })
   },
 
-  setSyncState: function (emailAddress, stateChange) {
-    objectAssign(accountSyncState[emailAddress], stateChange)
+  updateSyncState: function (emailAddress, stateChange) {
+    objectAssign(_accountSyncState[emailAddress], stateChange)
+    this.emitChange()
+  },
+
+  setSyncState: function (syncState) {
+    _accountSyncState = syncState
     this.emitChange()
   }
 })

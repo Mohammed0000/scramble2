@@ -78,7 +78,8 @@ module.exports = React.createClass({
       percent = Math.max(percent, 2)
       contents = totals.numUploaded < totals.numToUpload ?
         (totals.numUploaded + ' / ' + totals.numToUpload + ' sent') :
-        (totals.numDownloaded + ' / ' + totals.numToDownload + ' downloaded')
+        (totals.numDownloaded + ' / ' + totals.numToDownload + ' downloaded' +
+          ' (' + totals.numIndexed + ' indexed)')
     }
 
     var progressLineStyle = objectAssign({}, styles.progressLine, {width: (percent + '%')})

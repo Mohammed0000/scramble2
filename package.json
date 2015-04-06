@@ -11,7 +11,8 @@
     "node-keybase": "*",
     "scramble-mail-repo": "*",
     "scramble-imap": "*",
-    "object-assign": "*"
+    "object-assign": "*",
+    "mkdirp": "*"
   },
   "devDependencies": {
     "react-tools": "*",
@@ -20,7 +21,7 @@
   }, 
   "scripts": {
     "postinstall": "npm run copy && jsx --extension jsx --harmony views/ build/views",
-    "copy": "mkdir -p build/ && cp -ru css/ img/ stores/ actions/ index.html app.js node_modules/bootstrap/dist/* build/",
+    "copy": "mkdir -p build/ && cp -ru css/ img/ stores/ actions/ apis/ index.html app.js node_modules/bootstrap/dist/* build/",
     "test": "standard *.js stores/* actions/* views/*"
   }
 }
