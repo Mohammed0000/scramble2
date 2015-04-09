@@ -2,15 +2,15 @@
 
 This is my second attempt at making an encrypted email client.
 
-The original, scramble.io, is still around. I still use it every day. Not a lot of people are using it, though. Here's what I've learned:
+The original, scramble.io, is still around. I still use it every day. It could be better, though. Here's what I've learned:
 * People want to keep their existing email address. Many already have several, and don't want another that ends in `@scramble.io` 
 * For a good experience with end-to-end encrypted email, you need a local install.
-  A web app won't cut it. Search needs to happen on the client, so you need to store and index on the order of gigabytes of emails, while web apps only get a few megabytes and even that disappears every time you clear your browser! 
-  Scramble 2 is a local install.
+  A web app won't work well. Search needs to happen on the client, so you need to store and index on the order of gigabytes of text. 
+  Finally, with an installed app, we have better options to ensure you're running an untampered copy of the program. Scramble 2 is a local install.
 * Key exchange is hard. The notary system from the original `scramble.io`, while cool, is not as transparent or easy to understand as Keybase. So this time around, I'm integrating with Keybase. You'll be able to type 'mo' in the To box and it'll typeahead search and show you 'moot (Chris Poole)'. If it's your first time emailing him, Scramble will show you the public key fingerprint and links to the Keybase proofs so you can verify. (Those proofs are simply a Twitter post or FB post, etc, by moot, essentially saying "This fingerprint is my PGP public key: <...>".) After that, any correspondence will just be encrypted and signed automatically with no further effort.
   
  
-## Running
+## Quick start
 
 The process to run from source in Atom-Shell is still a bit janky.
 
@@ -27,3 +27,25 @@ From inside the scramble2 directory:
 * Run `apm install`
 * Run `npm install`
 * Run `../atom-shell/atom .`
+
+
+## The Code
+
+* Uses [Javascript Standard Style](https://github.com/feross/standard)
+* Uses Atom Shell. That means there are two separate JS processes: the main process and the client (aka "renderer") process. Check out the Atom Shell docs for an explanation of how this works.
+* Uses React and the Flux pattern. One-directional data flow. Scramble2 uses a simplified variant of Flux: it has actions, stores, and views, but no dispatcher. It also differs from a typical web app in that actions do RPC calls to the main process rather than REST API requests to a server. Here's what that looks like:
+
+    Internet       |  Main process   |  Renderer process
+                   |                 | 
+                   |                 |              stores
+    Keybase      <---              <---         -->       | 
+    IMAP           |       apis      |  actions           |
+    ...          --->              --->         <--       V
+                   |                 |              views 
+                   |                 |
+
+* All dependencies between files are managed by npm
+* Building is done via `npm` and `apm`. Everything is defined in `package.json`. No gulps, grunts, or yeomen.
+* Module expose their public interface *only*. No methods start with an underscore. Instead, private methods are kept local (not part of `module.exports`) and, if necessary, called via `bind` and `apply`. Check out `apis/IMAPAPI.js` to see how this works.
+* All the heavy lifting happens in the main process. The renderer process doesn't do any cryptography or access the internet directly.
+
