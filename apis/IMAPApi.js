@@ -1,28 +1,16 @@
 var EventEmitter = require('events').EventEmitter
 var path = require('path')
-var mkdirp = require('mkdirp')
 var fs = require('fs')
+var mkdirp = require('mkdirp')
 var objectAssign = require('object-assign')
 var ScrambleIMAP = require('scramble-imap')
 var ScrambleMailRepo = require('scramble-mail-repo')
+var LocalStore = require('./LocalStore')
 
-var accounts = []
-var accountSyncState = {}
-
-// TODO: map by email address, store sync state in SQLite
-var syncError = null
-
-// TODO: abstract home directory into a settings module
-var homeDir
-if (process.env.APPDATA) {
-  homeDir = path.join(process.env.APPDATA, 'Scramble')
-} else if (process.env.HOME) {
-  homeDir = path.join(process.env.HOME, '.scramble')
-} else {
-  throw new Error('Can\'t find home directory')
-}
-mkdirp.sync(homeDir)
-var mailRepo = new ScrambleMailRepo(homeDir)
+var _accounts = []
+var _accountSyncState = {}
+var _mailRepos = {}
+var _mailDir = LocalStore.getAppDir()
 
 /**
  * Provides everything the UI needs to sync IMAP accounts.
@@ -34,43 +22,37 @@ var mailRepo = new ScrambleMailRepo(homeDir)
 module.exports = objectAssign({}, EventEmitter.prototype, {
 
   getAccounts: function () {
-    return accounts
+    return _accounts
   },
 
   getSyncState: function () {
-    return accountSyncState
-  },
-
-  getSyncError: function () {
-    return syncError
+    return _accountSyncState
   },
 
   addGmailAccount: function (emailAddress, password) {
     var imap = ScrambleIMAP.createForGmail(emailAddress, password)
     imap.fetchAll()
 
-    imap.on('box', function (boxStats) {
+    imap.once('box', function (boxStats) {
       // Connected successfully. Add this account to our list of accounts
       console.log('Connected successfully. Inbox stats: ' + JSON.stringify(boxStats))
 
       // TODO: write to SQLite
-      accounts.push({
+      var account = {
         type: 'GMAIL',
         emailAddress: emailAddress,
         password: password
-      })
-      accountSyncState[emailAddress] = {
-        numToDownload: boxStats.messages.total,
-        numDownloaded: 0,
-        numIndexed: 0,
-        numToUpload: 0,
-        numUploaded: 0
       }
+      LocalStore.saveAccount(account)
+      _accounts.push(account)
 
-      mkdirp.sync(path.join(homeDir, emailAddress))
+      var syncState = getSyncStateForAddress(emailAddress)
+      syncState.numToDownload = boxStats.messages.total
 
-      this.emit('accountsChanged')
-      this.emit('syncChanged')
+      mkdirp.sync(path.join(_mailDir, emailAddress))
+
+      emitAccountsChanged.apply(this)
+      emitSyncChanged.apply(this)
     }.bind(this))
 
     imap.on('message', onMessage.bind(this, emailAddress))
@@ -80,11 +62,48 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
 
   addIMAPAccount: function (server, port, username, password) {
     throw new Error('Unimplemented')
+  },
+
+  /**
+   * Gets the scramble-mail-repo instance for this account, or null if none exists.
+   * This lets you read mail, search, and so on.
+   */
+  getMailRepo: function (emailAddress) {
+    return _mailRepos[emailAddress]
   }
 
 })
 
+/**
+ * Private event emitters
+ */
 EventEmitter.call(module.exports)
+
+function emitSyncChanged () {
+  this.emit('syncChanged', this.getSyncState())
+}
+
+function emitAccountsChanged () {
+  this.emit('accountsChanged', this.getAccounts())
+}
+
+/**
+ * Returns the sync state object for a given account,
+ * creating a new zeroed-out state if needed.
+ */
+function getSyncStateForAddress (emailAddress) {
+  if (!_accountSyncState[emailAddress]) {
+    _accountSyncState[emailAddress] = {
+      numToDownload: 0,
+      numDownloaded: 0,
+      numIndexed: 0,
+      numToUpload: 0,
+      numUploaded: 0,
+      errors: []
+    }
+  }
+  return _accountSyncState[emailAddress]
+}
 
 /**
  * Private event handler, fires after each message's headers are
@@ -99,20 +118,23 @@ function onMessage (emailAddress, msg) {
   var uid = gmailMsgId || msg.attributes.uid
 
   // Save to file
-  var syncState = accountSyncState[emailAddress]
-  var outputStream = fs.createWriteStream(path.join(homeDir, emailAddress, uid + '.txt'))
-  outputStream.on('close', function() {
+  var syncState = getSyncStateForAddress(emailAddress)
+  var outputStream = fs.createWriteStream(path.join(_mailDir, emailAddress, uid + '.txt'))
+  outputStream.on('close', function () {
     syncState.numDownloaded++
-    this.emit('syncChanged')
+    emitSyncChanged.apply(this)
   }.bind(this))
   msg.bodyStream.pipe(outputStream)
 
   // Save it to the index
-  // TODO
-  /*mailRepo.saveRawEmail(msg.bodyStream, function() {
+  var mailRepo = _mailRepos[emailAddress]
+  if (!mailRepo) {
+    mailRepo = _mailRepos[emailAddress] = new ScrambleMailRepo(path.join(_mailDir, emailAddress))
+  }
+  mailRepo.saveRawEmail(msg.bodyStream, function () {
     syncState.numIndexed++
-    this.emit('syncChanged')
-  }.bind(this))*/
+    emitSyncChanged.apply(this)
+  }.bind(this))
 }
 
 /**
@@ -135,10 +157,13 @@ function onMessage (emailAddress, msg) {
  *   "highestmodseq":"21890643"
  * }
  */
-function onBox (emailAddress, boxStats) {
-}
 
+/**
+ * Handles any kind of sync error.
+ * For example: if the connection to the IMAP server dies, or if you're offline.
+ */
 function onError (emailAddress, error) {
-  syncError = error
-  this.emit('syncChanged')
+  var syncState = getSyncStateForAddress(emailAddress)
+  syncState.errors.push(error)
+  emitSyncChanged.apply(this)
 }

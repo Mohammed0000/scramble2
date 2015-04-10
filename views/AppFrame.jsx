@@ -1,5 +1,3 @@
-var path = require('path')
-var remote = require('remote')
 var React = require('react')
 var Login = require('./Login')
 var Inbox = require('./Inbox')
@@ -40,8 +38,6 @@ module.exports = React.createClass({
       console.log('Rendering inbox')
       return (<Inbox
         accounts={[]}
-        searchMessages={searchMessages}
-        loadMessageCleanHTML={loadCleanHTML}
         keybaseSession={this.state.keybaseSession} />)
     } else if (this.state.screen === 'login') {
       return (<Login />)
@@ -50,27 +46,3 @@ module.exports = React.createClass({
     }
   }
 })
-
-// TODO: factor out store
-var ScrambleMailRepo = remote.require('scramble-mail-repo')
-var mailRepoDir = path.join(process.env.HOME, 'scramble-test-dir')
-var mailRepo = new ScrambleMailRepo(mailRepoDir)
-var messages = []
-function searchMessages (query, cb) {
-  mailRepo.search(query, function (err, msgs) {
-    messages = msgs
-    cb(err, msgs)
-  })
-}
-
-function loadCleanHTML (scrambleMailId) {
-  // TODO: read from disk, use MailParser, then use CAJA to sanitize HTML
-  // TODO: refactor to use a callback rather than returning directly
-  for (var i = 0; i < messages.length; i++) {
-    var message = messages[i]
-    if (message.scrambleMailId === scrambleMailId) {
-      return '<pre> ' + message.snippet + ' </pre>'
-    }
-  }
-  return '<div class="text-error">Not found</div>'
-}

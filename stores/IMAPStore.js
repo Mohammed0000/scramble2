@@ -10,7 +10,6 @@ var objectAssign = require('object-assign')
 
 var _accounts = []
 var _accountsByEmailAddress = {}
-var _addAccountErrorMessage = null
 var _accountSyncState = {}
 
 module.exports = objectAssign({}, EventEmitter.prototype, {
@@ -25,10 +24,6 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
 
   getAccounts: function () {
     return _accounts
-  },
-
-  getAddAccountErrorMessage: function () {
-    return _addAccountErrorMessage
   },
 
   setAccounts: function (accounts) {
@@ -54,17 +49,12 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     _accountsByEmailAddress[account.emailAddress] = account
   },
 
-  setAddAccountErrorMessage: function (message) {
-    _addAccountErrorMessage = message
-    this.emitChange()
-  },
-
   getSyncState: function (emailAddress) {
     return _accountSyncState[emailAddress]
   },
 
   getSyncStateTotals: function () {
-    return _accounts.map(function (account) {
+    var ret = _accounts.map(function (account) {
       return _accountSyncState[account.emailAddress]
     }).reduce(function (a, b) {
       return {
@@ -81,6 +71,24 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
       numToUpload: 0,
       numUploaded: 0
     })
+    for (var i in _accounts) {
+      if (_accounts[i].error !== null) {
+        ret.errorMessage = this._getErrorMessage(_accounts[i])
+      }
+    }
+    return ret
+  },
+
+  _getErrorMessage: function (err) {
+    if (!err) {
+      return null
+    } else if (err.source === 'timeout') {
+      return "Can't connect to the IMAP server. Are you offline?"
+    } else if (err.source === 'authentication') {
+      return 'Wrong username or password'
+    } else {
+      return 'Error: ' + err.source
+    }
   },
 
   updateSyncState: function (emailAddress, stateChange) {

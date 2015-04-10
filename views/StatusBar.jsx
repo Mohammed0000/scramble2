@@ -1,8 +1,6 @@
 var React = require('react')
 var IMAPStore = require('../stores/IMAPStore')
-var BS = require('react-bootstrap')
 var objectAssign = require('object-assign')
-
 
 // Component-specific styles applied as inline style & defined in JS.
 // Rationale described here: https://speakerdeck.com/vjeux/react-css-in-js

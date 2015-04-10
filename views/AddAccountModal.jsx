@@ -26,7 +26,7 @@ module.exports = React.createClass({
   },
 
   onIMAPStoreChange: function () {
-    var errorMessage = IMAPStore.getAddAccountErrorMessage()
+    var errorMessage = IMAPStore.getSyncStateTotals().errorMessage
     var inProgress = this.state.inProgress
     this.setState({
       errorMessage: errorMessage,
