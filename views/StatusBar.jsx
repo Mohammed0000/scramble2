@@ -38,12 +38,7 @@ module.exports = React.createClass({
 
   propTypes: {},
 
-  getInitialState: function () {
-    return {
-      syncStateTotals: IMAPStore.getSyncStateTotals(),
-      numAccounts: IMAPStore.getAccounts().length
-    }
-  },
+  getInitialState: getIMAPSummary,
 
   componentDidMount: function () {
     IMAPStore.addListener('change', this.onIMAPStoreChange)
@@ -54,7 +49,7 @@ module.exports = React.createClass({
   },
 
   onIMAPStoreChange: function () {
-    this.setState(this.getInitialState())
+    this.setState(getIMAPSummary())
   },
 
   render: function () {
@@ -91,3 +86,13 @@ module.exports = React.createClass({
   }
 
 })
+
+/**
+ * Returns {syncStateTotals: {numToDownload, numDownloaded, ..., errors}, numAccounts}
+ */
+function getIMAPSummary() {
+  return {
+    syncStateTotals: IMAPStore.getSyncStateTotals(),
+    numAccounts: IMAPStore.getAccounts().length
+  }
+}

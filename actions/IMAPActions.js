@@ -18,13 +18,17 @@ module.exports = {
 
   removeAccount: function (accountID) {
     throw new Error('Unimplemented')
+  },
+
+  cancelSync: function () {
+    remoteIMAPApi.cancelSync()
   }
 }
 
-remoteIMAPApi.on('accountsChanged', function (accounts) {
-  IMAPStore.setAccounts(accounts)
+remoteIMAPApi.on('accountsChanged', function (accountsJson) {
+  IMAPStore.setAccounts(JSON.parse(accountsJson))
 })
 
-remoteIMAPApi.on('syncChanged', function (syncState) {
-  IMAPStore.setSyncState(syncState)
+remoteIMAPApi.on('syncChanged', function (syncStateJson) {
+  IMAPStore.setSyncState(JSON.parse(syncStateJson))
 })

@@ -35,10 +35,12 @@ module.exports = React.createClass({
 
   render: function () {
     if (this.state.screen === 'inbox') {
-      console.log('Rendering inbox')
       return (<Inbox
+        keybaseSession={this.state.keybaseSession}
         accounts={[]}
-        keybaseSession={this.state.keybaseSession} />)
+        selectedAccount={null}
+        threads={[]}
+        selectedThreads={null} />)
     } else if (this.state.screen === 'login') {
       return (<Login />)
     } else {

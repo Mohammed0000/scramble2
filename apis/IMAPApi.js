@@ -10,6 +10,7 @@ var LocalStore = require('./LocalStore')
 var _accounts = []
 var _accountSyncState = {}
 var _mailRepos = {}
+var _imapConnections = {}
 var _mailDir = LocalStore.getAppDir()
 
 /**
@@ -56,8 +57,8 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     }.bind(this))
 
     imap.on('message', onMessage.bind(this, emailAddress))
-
     imap.on('error', onError.bind(this, emailAddress))
+    addIMAPConnection(emailAddress, imap)
   },
 
   addIMAPAccount: function (server, port, username, password) {
@@ -70,6 +71,12 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
    */
   getMailRepo: function (emailAddress) {
     return _mailRepos[emailAddress]
+  },
+
+  cancelSync: function () {
+    Object.keys(_imapConnections).forEach(function (emailAddress) {
+      _imapConnections[emailAddress].disconnect()
+    })
   }
 
 })
@@ -80,11 +87,18 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
 EventEmitter.call(module.exports)
 
 function emitSyncChanged () {
-  this.emit('syncChanged', this.getSyncState())
+  // atom-shell remote RPC objects have a lot of caveats
+  // one of them is callbacks should only take string arguments
+  // if you pass an object here (ie, if we remove the call to stringify)
+  // then the renderer process actually gets a *remoted* object back,
+  // where atom-shell intercepts all property gets and sets and turns them
+  // into synchronous RPC calls (!!)
+  // not only is this inefficient, it also causes infinite recursion...
+  this.emit('syncChanged', JSON.stringify(this.getSyncState()))
 }
 
 function emitAccountsChanged () {
-  this.emit('accountsChanged', this.getAccounts())
+  this.emit('accountsChanged', JSON.stringify(this.getAccounts()))
 }
 
 /**
@@ -110,8 +124,6 @@ function getSyncStateForAddress (emailAddress) {
  * downloaded via IMAP but before the body is saved to a file.
  */
 function onMessage (emailAddress, msg) {
-  console.log('Got message! ' + JSON.stringify(msg.attributes))
-
   // Parse out the message ID
   // var gmailThrId = msg.attributes['x-gm-thrid']
   var gmailMsgId = msg.attributes['x-gm-msgid']
@@ -163,7 +175,18 @@ function onMessage (emailAddress, msg) {
  * For example: if the connection to the IMAP server dies, or if you're offline.
  */
 function onError (emailAddress, error) {
+  console.warn('Sync error for ' + emailAddress, error)
   var syncState = getSyncStateForAddress(emailAddress)
   syncState.errors.push(error)
   emitSyncChanged.apply(this)
+}
+
+/**
+ * Adds a scramble-imap connection to the set of open connections.
+ */
+function addIMAPConnection(emailAddress, imap) {
+  if (_imapConnections[emailAddress]) {
+    throw new Error('There\'s already an active IMAP connection for ' + emailAddress)
+  }
+  _imapConnections[emailAddress] = imap
 }

@@ -53,8 +53,14 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     return _accountSyncState[emailAddress]
   },
 
+  /**
+   * Gets the combined sync state across all accounts. Returns an object as follows:
+   * {numToDownload, numDownloaded, numIndexed, numToUpload, numUploaded}
+   */
   getSyncStateTotals: function () {
-    var ret = _accounts.map(function (account) {
+    return _accounts.filter(function(account) {
+      return _accountSyncState[account.emailAddress]
+    }).map(function (account) {
       return _accountSyncState[account.emailAddress]
     }).reduce(function (a, b) {
       return {
@@ -71,12 +77,19 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
       numToUpload: 0,
       numUploaded: 0
     })
+  },
+
+  /**
+   * Returns a single error message if any of the accounts aren't syncing,
+   * or null if everything is OK.
+   */
+  getCombinedErrorMessage: function () {
     for (var i in _accounts) {
-      if (_accounts[i].error !== null) {
-        ret.errorMessage = this._getErrorMessage(_accounts[i])
+      if (_accounts[i].error) {
+        return this._getErrorMessage(_accounts[i].error)
       }
     }
-    return ret
+    return null
   },
 
   _getErrorMessage: function (err) {
@@ -87,6 +100,7 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     } else if (err.source === 'authentication') {
       return 'Wrong username or password'
     } else {
+      console.log('IMAPStore: Unknown IMAP sync error', err)
       return 'Error: ' + err.source
     }
   },

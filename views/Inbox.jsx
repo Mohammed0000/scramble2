@@ -11,46 +11,43 @@ module.exports = React.createClass({
   propTypes: {
     keybaseSession: React.PropTypes.object.isRequired,
     accounts: React.PropTypes.array.isRequired,
-    searchMessages: React.PropTypes.func.isRequired,
-    loadMessageCleanHTML: React.PropTypes.func.isRequired
+    selectedAccount: React.PropTypes.object,
+    threads: React.PropTypes.array.isRequired,
+    selectedThread: React.PropTypes.object
   },
 
   getInitialState: function () {
     return {
-      selectedAccount: this.props.accounts[0] || null,
-      messages: [],
-      selectedMessageCleanHTML: null
+      isAddingAccount: false
     }
   },
 
   onAddAccount: function () {
-    // Show the Add Account view
-    console.log('Showing Add Account screen...')
-  },
-
-  searchMessages: function (query) {
-    var self = this
-    this.props.searchMessages(query, function (err, msgs) {
-      if (err) {
-        console.error('Could not load messages', err)
-      }
-      self.setState({
-        messages: msgs
-      })
-    })
-  },
-
-  selectMessage: function (scrambleMailId) {
+    // Show the Add Account modal
     this.setState({
-      selectedMessageCleanHTML: this.props.loadMessageCleanHTML(scrambleMailId)
+      isAddingAccount: true
     })
   },
 
-  getMessageID: function (message) {
+  onCancelSync: function () {
+    // TODO: here for testing, remove
+    console.log('Cancelling sync...')
+    require('../actions/IMAPActions').cancelSync()
+  },
+
+  searchThreads: function (query) {
+    // TODO: fire a search action
+  },
+
+  selectThread: function (scrambleMailId) {
+    // TODO: fire a select action
+  },
+
+  getThreadID: function (message) {
     return message.scrambleMailId
   },
 
-  renderMessage: function (message) {
+  renderThread: function (message) {
     return (<div>{message.subject}</div>)
   },
 
@@ -68,16 +65,17 @@ module.exports = React.createClass({
             <div className='col-md-4'>
               <p>Welcome, {keybaseUsername}!</p>
               <SearchList
-                data={this.state.messages}
-                elementFunc={this.renderMessage}
-                keyFunc={this.getMessageID}
-                onSelect={this.selectMessage}
-                onSearch={this.searchMessages}/>
+                data={this.props.threads}
+                elementFunc={this.renderThread}
+                keyFunc={this.getThreadID}
+                onSelect={this.selectThread}
+                onSearch={this.searchThreads}/>
 
               <footer className='footer'>
-                <BS.ModalTrigger modal={<AddAccountModal />}>
+                <div className='btn-toolbar'>
                   <BS.Button bsStyle='primary' onClick={this.onAddAccount}>Add Account</BS.Button>
-                </BS.ModalTrigger>
+                  <BS.Button onClick={this.onCancelSync}>Cancel Sync</BS.Button>
+                </div>
               </footer>
             </div>
             <div className='col-md-8'>
@@ -85,6 +83,8 @@ module.exports = React.createClass({
             </div>
           </div>
         </div>
+
+        { this.state.isAddingAccount ? (<AddAccountModal />) : null }
 
         <StatusBar />
       </div>)

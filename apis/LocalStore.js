@@ -40,7 +40,8 @@ module.exports = {
    * Adds a new IMAP account. See loadAccounts for the format.
    */
   saveAccount: function (account) {
-    _db.run('insert into IMAPAccount (emailAddress, type, username, password, host, port) ' +
+    // TODO: call back with an error if the user tries to add a connection for an email addr that already exists
+    _db.run('insert or ignore into IMAPAccount (emailAddress, type, username, password, host, port) ' +
       'values (?, ?, ?, ?, ?, ?)',
       account.emailAddress,
       account.type,

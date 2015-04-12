@@ -6,9 +6,7 @@ var IMAPActions = require('../actions/IMAPActions')
 module.exports = React.createClass({
   displayName: 'AddAccountModal',
 
-  propTypes: {
-    onRequestHide: React.PropTypes.func
-  },
+  propTypes: {},
 
   getInitialState: function () {
     return {
@@ -26,17 +24,9 @@ module.exports = React.createClass({
   },
 
   onIMAPStoreChange: function () {
-    var errorMessage = IMAPStore.getSyncStateTotals().errorMessage
-    var inProgress = this.state.inProgress
     this.setState({
-      errorMessage: errorMessage,
-      inProgress: false
+      errorMessage: IMAPStore.getCombinedErrorMessage()
     })
-    if (inProgress && !errorMessage) {
-      // Account added successfully
-      console.log('Account added successfully, closing Add Account modal')
-      this.props.onRequestHide()
-    }
   },
 
   onAddAccount: function () {
@@ -48,13 +38,17 @@ module.exports = React.createClass({
     IMAPActions.addGmailAccount(username, password)
   },
 
+  onCancel: function () {
+    //TODO: fire cancel event
+  },
+
   render: function () {
     var errorMessage = this.state.errorMessage
     var inProgress = this.state.inProgress
     var spinner = inProgress ? (<img src='./img/spinner.gif' />) : null
 
     return (
-      <BS.Modal {...this.props} bsStyle='primary' title='Add Account' animation={false}>
+      <BS.Modal bsStyle='primary' title='Add Account' animation={false} onRequestHide={this.onCancel}>
         <div className='modal-body'>
           <p>
             <BS.ButtonGroup>
@@ -85,7 +79,7 @@ module.exports = React.createClass({
         </div>
         <div className='modal-footer'>
           <BS.Button bsStyle='primary' onClick={this.onAddAccount} disabled={inProgress}>Add Account {spinner}</BS.Button>
-          <BS.Button onClick={this.props.onRequestHide} disabled={inProgress}>Cancel</BS.Button>
+          <BS.Button onClick={this.onCancel} disabled={inProgress}>Cancel</BS.Button>
         </div>
       </BS.Modal>
     )
