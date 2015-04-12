@@ -35,17 +35,24 @@ From inside the scramble2 directory:
 * Uses Atom Shell. That means there are two separate JS processes: the main process and the client (aka "renderer") process. Check out the Atom Shell docs for an explanation of how this works.
 * Uses React and the Flux pattern. One-directional data flow. Scramble2 uses a simplified variant of Flux: it has actions, stores, and views, but no dispatcher. It also differs from a typical web app in that actions do RPC calls to the main process rather than REST API requests to a server. Here's what that looks like:
 
-    Internet       |  Main process   |  Renderer process
-                   |                 | 
-                   |                 |              stores
-    Keybase      <---              <---         -->       | 
-    IMAP           |       apis      |  actions           |
-    ...          --->              --->         <--       V
-                   |                 |              views 
-                   |                 |
+
+        Internet       |  Main process   |  Renderer process
+                       |                 | 
+                       |                 |              stores
+        Keybase      <---              <---         -->       | 
+        IMAP           |       apis      |  actions           |
+        ...          --->              --->         <--       V
+                       |                 |              views 
+                       |                 |
+
 
 * All dependencies between files are managed by npm
 * Building is done via `npm` and `apm`. Everything is defined in `package.json`. No gulps, grunts, or yeomen.
 * Module expose their public interface *only*. No methods start with an underscore. Instead, private methods are kept local (not part of `module.exports`) and, if necessary, called via `bind` and `apply`. Check out `apis/IMAPAPI.js` to see how this works.
 * All the heavy lifting happens in the main process. The renderer process doesn't do any cryptography or access the internet directly.
 
+## Troubleshooting
+
+#### aspm fails with `gyp_main.py: error: no such option: --no-parallel`
+
+The Ubuntu repos have an obsolete version of `node-gyp` that overrides the one you installed with npm. Run `sudo apt-get purge gyp`, then the npm version should kick in.
