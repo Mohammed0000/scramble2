@@ -14,10 +14,6 @@ var loginState = {
 var keybaseSession = null
 
 module.exports = objectAssign({}, EventEmitter.prototype, {
-  emitChange: function () {
-    this.emit('change')
-  },
-
   /**
    * Returns the login state, in the form {loggedInAs, wrongUsername, wrongPassword, error}
    * where the first two are boolean and `error` is a clean error message.
@@ -57,7 +53,7 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
       error: null
     }
     keybaseSession = keybaseLoginResult
-    this.emitChange()
+    emitChange.apply(this)
   },
 
   setWrongUsername: function () {
@@ -66,7 +62,7 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
       wrongPassphrase: false,
       error: 'User not found'
     }
-    this.emitChange()
+    emitChange.apply(this)
   },
 
   setWrongPassphrase: function () {
@@ -75,7 +71,7 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
       wrongPassphrase: true,
       error: 'Wrong passphrase, try again'
     }
-    this.emitChange()
+    emitChange.apply(this)
   },
 
   setOtherLoginError: function (message) {
@@ -84,8 +80,12 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
       wrongPassphrase: false,
       error: message
     }
-    this.emitChange()
+    emitChange.apply(this)
   }
 })
 
 EventEmitter.call(module.exports)
+
+function emitChange() {
+  this.emit('change')
+}

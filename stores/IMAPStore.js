@@ -5,6 +5,7 @@
  *
  * Does not talk to IMAP servers. For that, see IMAPActions and scramble-imap.
  */
+
 var EventEmitter = require('events').EventEmitter
 var objectAssign = require('object-assign')
 
@@ -18,10 +19,6 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     IMAP: 'IMAP'
   },
 
-  emitChange: function () {
-    this.emit('change')
-  },
-
   getAccounts: function () {
     return _accounts
   },
@@ -29,26 +26,19 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   setAccounts: function (accounts) {
     _accounts = []
     _accountsByEmailAddress = {}
-    accounts.forEach(this._addAccount.bind(this))
-    this.emitChange()
+    accounts.forEach(verifyAndAddAccount.bind(this))
+    emitChange.apply(this)
   },
 
   addAccount: function (account) {
-    this._addAccount(account)
-    this.emitChange()
+    verifyAndAddAccount.apply(this, account)
+    emitChange.apply(this)
   },
 
-  _addAccount: function (account) {
-    if (!this.AccountType[account.type] || !account.emailAddress) {
-      throw 'Invalid account: ' + JSON.stringify(account)
-    }
-    if (_accountsByEmailAddress[account.emailAddress]) {
-      throw 'Account ' + account.emailAddress + ' already exists'
-    }
-    _accounts.push(account)
-    _accountsByEmailAddress[account.emailAddress] = account
-  },
-
+  /**
+   * Gets the sync state of a single acocunt. Returns an object as follows:
+   * {numToDownload, numDownloaded, numIndexed, numToUpload, numUploaded}
+   */
   getSyncState: function (emailAddress) {
     return _accountSyncState[emailAddress]
   },
@@ -86,34 +76,49 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   getCombinedErrorMessage: function () {
     for (var i in _accounts) {
       if (_accounts[i].error) {
-        return this._getErrorMessage(_accounts[i].error)
+        return getErrorMessage(_accounts[i].error)
       }
     }
     return null
   },
 
-  _getErrorMessage: function (err) {
-    if (!err) {
-      return null
-    } else if (err.source === 'timeout') {
-      return "Can't connect to the IMAP server. Are you offline?"
-    } else if (err.source === 'authentication') {
-      return 'Wrong username or password'
-    } else {
-      console.log('IMAPStore: Unknown IMAP sync error', err)
-      return 'Error: ' + err.source
-    }
-  },
-
   updateSyncState: function (emailAddress, stateChange) {
     objectAssign(_accountSyncState[emailAddress], stateChange)
-    this.emitChange()
+    emitChange.apply(this)
   },
 
   setSyncState: function (syncState) {
     _accountSyncState = syncState
-    this.emitChange()
+    emitChange.apply(this)
   }
 })
 
 EventEmitter.call(module.exports)
+
+function verifyAndAddAccount(account) {
+  if (!this.AccountType[account.type] || !account.emailAddress) {
+    throw 'Invalid account: ' + JSON.stringify(account)
+  }
+  if (_accountsByEmailAddress[account.emailAddress]) {
+    throw 'Account ' + account.emailAddress + ' already exists'
+  }
+  _accounts.push(account)
+  _accountsByEmailAddress[account.emailAddress] = account
+}
+
+function getErrorMessage (err) {
+  if (!err) {
+    return null
+  } else if (err.source === 'timeout') {
+    return "Can't connect to the IMAP server. Are you offline?"
+  } else if (err.source === 'authentication') {
+    return 'Wrong username or password'
+  } else {
+    console.log('IMAPStore: Unknown IMAP sync error', err)
+    return 'Error: ' + err.source
+  }
+}
+
+function emitChange() {
+  this.emit('change')
+}

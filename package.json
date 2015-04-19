@@ -12,7 +12,8 @@
     "scramble-mail-repo": "*",
     "scramble-imap": "*",
     "object-assign": "*",
-    "mkdirp": "*"
+    "mkdirp": "*",
+    "deep-equal": "*"
   },
   "devDependencies": {
     "react-tools": "*",
