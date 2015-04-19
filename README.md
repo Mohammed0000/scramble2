@@ -53,6 +53,14 @@ From inside the scramble2 directory:
 
 ## Troubleshooting
 
-#### aspm fails with `gyp_main.py: error: no such option: --no-parallel`
+##### aspm fails with `gyp_main.py: error: no such option: --no-parallel`
 
 The Ubuntu repos have an obsolete version of `node-gyp` that overrides the one you installed with npm. Run `sudo apt-get purge gyp`, then the npm version should kick in.
+
+##### Error opening app
+
+    Error opening app
+    The app provided is not a valid atom-shell app, please read the docs on how to write one:
+    https://github.com/atom/atom-shell/tree/master/docs
+
+This cryptic error message is atom-shell's way of saying that `require()` failed--in other words, one or more modules couldn't be loaded. For `scramble2`, you can get this error if you have the wrong binary version of `node-sqlite3` installed. Make sure you run that `aspm` command under Quick Start. If you're developing `scramble-mail-repo` locally, run the same command from that directory instead of the `scramble2` directory.
