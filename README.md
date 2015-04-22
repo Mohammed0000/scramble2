@@ -1,7 +1,5 @@
 # Scramble 2
 
-![screenshot](http://i.imgur.com/hG0OTSK.png)
-
 This is my second attempt at making an encrypted email client.
 
 The original, scramble.io, is still around. I still use it every day. It could be better, though. Here's what I've learned:
@@ -10,7 +8,10 @@ The original, scramble.io, is still around. I still use it every day. It could b
   A web app won't work well. Search needs to happen on the client, so you need to store and index on the order of gigabytes of text. 
   Finally, with an installed app, we have better options to ensure you're running an untampered copy of the program. Scramble 2 is a local install.
 * Key exchange is hard. The notary system from the original `scramble.io`, while cool, is not as transparent or easy to understand as Keybase. So this time around, I'm integrating with Keybase. You'll be able to type 'mo' in the To box and it'll typeahead search and show you 'moot (Chris Poole)'. If it's your first time emailing him, Scramble will show you the public key fingerprint and links to the Keybase proofs so you can verify. (Those proofs are simply a Twitter post or FB post, etc, by moot, essentially saying "This fingerprint is my PGP public key: <...>".) After that, any correspondence will just be encrypted and signed automatically with no further effort.
-  
+
+## Screenshot
+
+![screenshot](http://i.imgur.com/hG0OTSK.png)
  
 ## Quick start
 
