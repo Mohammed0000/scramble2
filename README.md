@@ -1,5 +1,7 @@
 # Scramble 2
 
+![screenshot](http://i.imgur.com/hG0OTSK.png)
+
 This is my second attempt at making an encrypted email client.
 
 The original, scramble.io, is still around. I still use it every day. It could be better, though. Here's what I've learned:
