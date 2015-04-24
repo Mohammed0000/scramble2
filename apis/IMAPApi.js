@@ -77,8 +77,18 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     Object.keys(_imapConnections).forEach(function (emailAddress) {
       _imapConnections[emailAddress].disconnect()
     })
-  }
+  },
 
+  /**
+   * Starts loading accounts from the 
+   */
+  startSyncingAllAccounts: function () {
+    LocalStore.loadAccounts((function(error, accountRows) {
+      _accounts = accountRows
+      // TODO: start sync
+      emitAccountsChanged.apply(this)
+    }).bind(this))
+  }
 })
 
 /**
@@ -98,6 +108,7 @@ function emitSyncChanged () {
 }
 
 function emitAccountsChanged () {
+  console.log("emitAccountsChanged "+JSON.stringify(this.getAccounts()))
   this.emit('accountsChanged', JSON.stringify(this.getAccounts()))
 }
 

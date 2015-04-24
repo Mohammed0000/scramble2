@@ -12,6 +12,7 @@ var deepEquals = require('deep-equal')
 var _threadQuery = null
 var _threads = []
 var _selectedThread = null
+var _queryError = null
 
 module.exports = objectAssign({}, EventEmitter.prototype, {
   getThreadQuery: function () {
@@ -30,16 +31,20 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     _threadQuery = threadQuery
     _threads = []
     emitChange.apply(this)
-  }
+  },
 
-  setQueryResults: function (threadQuery, threads) {
+  /**
+   * Expects a result in the form {threadQuery, error, threads}
+   */
+  setQueryResult: function (queryResult) {
     // Ignore results that come in late for what is no
     // longer the current query and page
-    if (deepEquals(threadQuery, _threadQuery)) {
-      _threads = threads
+    if (deepEquals(queryResult.threadQuery, _threadQuery)) {
+      _queryError = queryResult.error
+      _threads = queryResult.threads
       emitChange.apply(this)
     }
-  }
+  },
 
   setSelectedThread: function (thread) {
     _selectedThread = thread

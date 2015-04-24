@@ -12,6 +12,8 @@ var objectAssign = require('object-assign')
 var _accounts = []
 var _accountsByEmailAddress = {}
 var _accountSyncState = {}
+// Non-null in the Add Account flow
+var _newAccount = null
 
 module.exports = objectAssign({}, EventEmitter.prototype, {
   AccountType: {
@@ -33,6 +35,15 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   addAccount: function (account) {
     verifyAndAddAccount.apply(this, account)
     emitChange.apply(this)
+  },
+
+  setNewAccount: function (newAccount) {
+    _newAccount = newAccount
+    emitChange.apply(this)
+  },
+
+  getNewAccount: function () {
+    return _newAccount
   },
 
   /**

@@ -10,6 +10,7 @@ module.exports = {
     // Try connecting to the account to download mail
     var emailAddress = /@/.test(username) ? username : (username + '@gmail.com')
     remoteIMAPApi.addGmailAccount(emailAddress, password)
+    _newAccount = null
   },
 
   addIMAPAccount: function (server, port, username, password) {
@@ -18,6 +19,14 @@ module.exports = {
 
   removeAccount: function (accountID) {
     throw new Error('Unimplemented')
+  },
+
+  startAddAccount: function () {
+    IMAPStore.setNewAccount({})
+  },
+
+  cancelAddAccount: function () {
+    IMAPStore.setNewAccount(null)
   },
 
   cancelSync: function () {

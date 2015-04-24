@@ -1,16 +1,22 @@
 var remote = require('remote') 
 var InboxStore = require('../stores/InboxStore')
-var remoteInboxAPI = require('./apis/IMAPApi')
+var remoteSearchAPI = remote.require('./apis/SearchApi')
 
 module.exports = {
-  queryThreads: function (query, page) {
-    InboxStore.setQuery(query, page)
-    remoteInboxAPI.queryThreads(query, page)
+  queryThreads: function (emailAddress, queryString, page) {
+    console.log('InboxActions.queryThreads')
+    var threadQuery = {
+      emailAddress: emailAddress,
+      queryString: queryString,
+      page: page
+    }
+    InboxStore.setThreadQuery(threadQuery)
+    remoteSearchAPI.queryThreads(threadQuery)
   }
 }
 
-remoteInboxAPI.on('queryResult', function (queryResultJson) {
+remoteSearchAPI.on('queryResult', function (queryResultJson) {
   var queryResult = JSON.parse(queryResultJson)
-  InboxStore.setQueryResults(queryResult.query, queryResults.page, threads)
+  InboxStore.setQueryResult(queryResult)
 })
 

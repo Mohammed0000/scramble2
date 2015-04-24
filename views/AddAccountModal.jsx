@@ -39,7 +39,7 @@ module.exports = React.createClass({
   },
 
   onCancel: function () {
-    //TODO: fire cancel event
+    IMAPActions.cancelAddAccount()
   },
 
   render: function () {

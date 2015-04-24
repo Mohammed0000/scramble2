@@ -1,9 +1,10 @@
 var React = require('react')
 var BS = require('react-bootstrap')
-var AddAccountModal = require('./AddAccountModal')
 var Tabs = require('./Tabs')
 var SearchList = require('./SearchList')
 var StatusBar = require('./StatusBar')
+var InboxActions = require('../actions/InboxActions')
+var IMAPActions = require('../actions/IMAPActions')
 
 module.exports = React.createClass({
   displayName: 'Inbox',
@@ -16,27 +17,24 @@ module.exports = React.createClass({
     selectedThread: React.PropTypes.object
   },
 
-  getInitialState: function () {
-    return {
-      isAddingAccount: false
-    }
-  },
-
   onAddAccount: function () {
-    // Show the Add Account modal
-    this.setState({
-      isAddingAccount: true
-    })
+    // Start the Add Account flow
+    IMAPActions.startAddAccount()
   },
 
   onCancelSync: function () {
     // TODO: here for testing, remove
     console.log('Cancelling sync...')
-    require('../actions/IMAPActions').cancelSync()
+    IMAPActions.cancelSync()
   },
 
-  searchThreads: function (query) {
-    // TODO: fire a search action
+  onSelectAccount: function (evt) {
+    console.log('Inbox.onSelectAccount ' + JSON.stringify(evt))
+  },
+
+  searchThreads: function (queryString) {
+    // TODO: email address and page
+    InboxActions.queryThreads('dcposch@gmail.com', queryString, 1)
   },
 
   selectThread: function (scrambleMailId) {
@@ -52,9 +50,10 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    var contentElem = (this.state.selectedAccount === null ?
+    var contentElem = (this.props.selectedAccount === null ?
         this.renderWelcome() :
         this.renderInboxState())
+    var imapAccountButton = this.renderIMAPAccountButton()
     var keybaseUsername = this.props.keybaseSession.me.id
 
     return (
@@ -64,6 +63,9 @@ module.exports = React.createClass({
           <div className='row'>
             <div className='col-md-4'>
               <p>Welcome, {keybaseUsername}!</p>
+
+              {imapAccountButton}
+
               <SearchList
                 data={this.props.threads}
                 elementFunc={this.renderThread}
@@ -71,12 +73,6 @@ module.exports = React.createClass({
                 onSelect={this.selectThread}
                 onSearch={this.searchThreads}/>
 
-              <footer className='footer'>
-                <div className='btn-toolbar'>
-                  <BS.Button bsStyle='primary' onClick={this.onAddAccount}>Add Account</BS.Button>
-                  <BS.Button onClick={this.onCancelSync}>Cancel Sync</BS.Button>
-                </div>
-              </footer>
             </div>
             <div className='col-md-8'>
               {contentElem}
@@ -84,10 +80,38 @@ module.exports = React.createClass({
           </div>
         </div>
 
-        { this.state.isAddingAccount ? (<AddAccountModal />) : null }
-
         <StatusBar />
       </div>)
+  },
+
+  renderIMAPAccountButton: function () {
+    if (this.props.selectedAccount === null) {
+      return (
+        <BS.Button bsStyle='primary' onClick={this.onAddAccount}>
+          Add Account
+        </BS.Button>)
+    } else {
+      var selectedEmailAddress = this.props.selectedAccount.emailAddress 
+      var accountElems = this.props.accounts.filter(function(account){
+        return account.emailAddress !== selectedEmailAddress
+      }).map(function(account) {
+        return (
+          <BS.MenuItem key={account.emailAddress} eventKey={account.emailAddress}>
+            {account.emailAddress}
+          </BS.MenuItem>)
+      })
+      if (accountElems.length > 0) {
+        accountElems.push(<BS.MenuItem key="div" divider="1" />)
+      }
+      accountElems.push(
+        <BS.MenuItem key="add" onClick={this.onAddAccount}>
+          Add Account
+        </BS.MenuItem>)
+      return (
+        <BS.DropdownButton title={selectedEmailAddress} onClick={this.onSelectAccount}>
+          {accountElems}
+        </BS.DropdownButton>)
+    }
   },
 
   renderWelcome: function () {

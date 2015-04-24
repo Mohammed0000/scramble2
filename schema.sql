@@ -17,3 +17,4 @@ create table if not exists Setting (
   name text primary key,
   value text not null
 );
+
