@@ -8,11 +8,11 @@ var objectAssign = require('object-assign')
 module.exports = objectAssign({}, EventEmitter.prototype, {
   queryThreads: function (threadQuery) {
     var mailRepo = IMAPApi.getMailRepo(threadQuery.emailAddress)
-    if (mailRepo === null) {
+    if (!mailRepo) {
       var error = "Can't find email database for " + threadQuery.emailAddress
-      emitQueryResult.apply(this, threadQuery, error, [])
+      emitQueryResult.call(this, threadQuery, error, [])
     } else {
-      mailRepo.search(query, emitQueryResult.bind(this, threadQuery))
+      mailRepo.search(threadQuery.queryString, emitQueryResult.bind(this, threadQuery))
     }
   },
 
@@ -25,6 +25,11 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
 EventEmitter.call(module.exports)
 
 function emitQueryResult(threadQuery, err, msgs) {
+  console.log('Emitting WTF ' + JSON.stringify({
+    threadQuery: threadQuery,
+    error: err,
+    threads: msgs // TODO: threads, not messages
+  }))
   this.emit('queryResult', JSON.stringify({
     threadQuery: threadQuery,
     error: err,

@@ -27,6 +27,10 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     return _selectedThread
   },
 
+  getQueryError: function () {
+    return _queryError
+  },
+
   setThreadQuery: function (threadQuery) {
     _threadQuery = threadQuery
     _threads = []

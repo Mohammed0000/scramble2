@@ -4,6 +4,7 @@ var App = require('app')
 var BrowserWindow = require('browser-window')
 var ScrambleMailRepo = require('scramble-mail-repo')
 var IMAPApi = require('./apis/IMAPApi')
+var SearchApi = require('./apis/SearchApi')
 
 var mainWindow = null
 

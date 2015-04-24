@@ -38,7 +38,6 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
       // Connected successfully. Add this account to our list of accounts
       console.log('Connected successfully. Inbox stats: ' + JSON.stringify(boxStats))
 
-      // TODO: write to SQLite
       var account = {
         type: 'GMAIL',
         emailAddress: emailAddress,
@@ -80,11 +79,15 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   },
 
   /**
-   * Starts loading accounts from the 
+   * Starts loading accounts from IMAP servers.
+   * TODO: split out initialize() to just load from sqlite?
    */
   startSyncingAllAccounts: function () {
     LocalStore.loadAccounts((function(error, accountRows) {
       _accounts = accountRows
+      _accounts.forEach(function(account) {
+        getOrCreateMailRepo(account.emailAddress)
+      })
       // TODO: start sync
       emitAccountsChanged.apply(this)
     }).bind(this))
@@ -150,10 +153,7 @@ function onMessage (emailAddress, msg) {
   msg.bodyStream.pipe(outputStream)
 
   // Save it to the index
-  var mailRepo = _mailRepos[emailAddress]
-  if (!mailRepo) {
-    mailRepo = _mailRepos[emailAddress] = new ScrambleMailRepo(path.join(_mailDir, emailAddress))
-  }
+  var mailRepo = getOrCreateMailRepo(emailAddress)
   mailRepo.saveRawEmail(msg.bodyStream, function () {
     syncState.numIndexed++
     emitSyncChanged.apply(this)
@@ -200,4 +200,13 @@ function addIMAPConnection(emailAddress, imap) {
     throw new Error('There\'s already an active IMAP connection for ' + emailAddress)
   }
   _imapConnections[emailAddress] = imap
+}
+
+function getOrCreateMailRepo (emailAddress) {
+  var mailRepo = _mailRepos[emailAddress]
+  if (!mailRepo) {
+    mailRepo = new ScrambleMailRepo(path.join(_mailDir, emailAddress))
+    _mailRepos[emailAddress] = mailRepo
+  }
+  return mailRepo
 }

@@ -33,7 +33,7 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   },
 
   addAccount: function (account) {
-    verifyAndAddAccount.apply(this, account)
+    verifyAndAddAccount.call(this, account)
     emitChange.apply(this)
   },
 

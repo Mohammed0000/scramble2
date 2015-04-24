@@ -5,6 +5,7 @@ var AddAccountModal = require('./AddAccountModal')
 var KeybaseStore = require('../stores/KeybaseStore')
 var IMAPStore = require('../stores/IMAPStore')
 var InboxStore = require('../stores/InboxStore')
+var InboxActions = require('../actions/InboxActions')
 
 module.exports = React.createClass({
 
@@ -18,7 +19,9 @@ module.exports = React.createClass({
       keybaseSession: null,
       accounts: [],
       selectedAccount: null,
-      isAddingAccount: false
+      isAddingAccount: false,
+      threads: [],
+      selectedThread: null
     }
   },
 
@@ -47,6 +50,20 @@ module.exports = React.createClass({
     var accounts = IMAPStore.getAccounts()
     var selectedAccount = this.state.selectedAccount || accounts[0] || null
     var isAddingAccount = IMAPStore.getNewAccount() !== null
+
+    // If the selected account has changed, kick off a new
+    // query to get the latest threads. 
+    // TODO: does this logic belong in InboxActions?
+    // The state (selectedAccount) prob belongs in IMAPStore
+    // ...and prob should be saved to the DB thru IMAPApi
+    if (selectedAccount !== this.state.selectedAccount) {
+      this.setState({
+        threads: [],
+        selectedThread: null
+      })
+      InboxActions.queryThreads(selectedAccount.emailAddress, "", 1)
+    }
+
     this.setState({
       accounts: accounts,
       selectedAccount: selectedAccount,
@@ -56,6 +73,15 @@ module.exports = React.createClass({
 
   onInboxStoreChanged: function () {
     console.log("InboxStoreChanged")
+    var errorMessage = InboxStore.getQueryError()
+    if (errorMessage) {
+      alert(errorMessage)
+    }
+    var threads = InboxStore.getThreads()
+    this.setState({
+      threads: threads,
+      selectedThread: (threads && threads[0] || null)
+    })
   },
 
   render: function () {
@@ -65,7 +91,7 @@ module.exports = React.createClass({
           keybaseSession={this.state.keybaseSession}
           accounts={this.state.accounts}
           selectedAccount={this.state.selectedAccount}
-          threads={[]}
+          threads={this.state.threads}
           selectedThreads={null} />)
       var modal = this.state.isAddingAccount ? (<AddAccountModal />) : null
       return (
