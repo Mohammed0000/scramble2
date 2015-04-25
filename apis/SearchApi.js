@@ -9,11 +9,20 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   queryThreads: function (threadQuery) {
     var mailRepo = IMAPApi.getMailRepo(threadQuery.emailAddress)
     if (!mailRepo) {
-      var error = "Can't find email database for " + threadQuery.emailAddress
-      emitQueryResult.call(this, threadQuery, error, [])
-    } else {
-      mailRepo.search(threadQuery.queryString, emitQueryResult.bind(this, threadQuery))
+      return emitQueryResult.call(this, threadQuery, getErrorMessage(threadQuery.emailAddress), [])
     }
+    mailRepo.search(threadQuery.queryString, emitQueryResult.bind(this, threadQuery))
+  },
+
+  loadThread: function (emailAddress, threadID) {
+    var mailRepo = IMAPApi.getMailRepo(emailAddress)
+    if (!mailRepo) {
+      return emitThreadResult.call(this, emailAddress, threadID, getErrorMessage(emailAddress), null)
+    }
+
+    //TODO: threads, not messages
+    //mailRepo.getThread(threadID, emitThreadResult.bind(this, emailAddress, threadID))
+    mailRepo.getMessage(threadID, emitThreadResult.bind(this, emailAddress, threadID))
   },
 
   loadCleanHTML: function (emailAddress, scrambleMailId) {
@@ -24,15 +33,29 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
 
 EventEmitter.call(module.exports)
 
+function getErrorMessage(emailAddress) {
+  return 'Can\'t find email database for ' + emailAddress
+}
+
 function emitQueryResult(threadQuery, err, msgs) {
-  console.log('Emitting WTF ' + JSON.stringify({
-    threadQuery: threadQuery,
-    error: err,
-    threads: msgs // TODO: threads, not messages
-  }))
   this.emit('queryResult', JSON.stringify({
     threadQuery: threadQuery,
     error: err,
     threads: msgs // TODO: threads, not messages
   }))
 }
+
+// TODO: take a thread, not a message
+function emitThreadResult(emailAddress, threadID, err, message) {
+  var thread = {
+    messages: [message] 
+  }
+
+  this.emit('thread', JSON.stringify({
+    emailAddress: emailAddress,
+    threadID: threadID,
+    err: err,
+    thread: thread
+  }))
+}
+

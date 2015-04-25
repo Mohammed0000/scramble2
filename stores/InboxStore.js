@@ -11,7 +11,8 @@ var deepEquals = require('deep-equal')
 
 var _threadQuery = null
 var _threads = []
-var _selectedThread = null
+var _selectedThreadID = null
+var _threadResult = null
 var _queryError = null
 
 module.exports = objectAssign({}, EventEmitter.prototype, {
@@ -23,17 +24,26 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     return _threads
   },
 
-  getSelectedThread: function () {
-    return _selectedThread
+  getSelectedThreadID: function () {
+    return _selectedThreadID
   },
 
   getQueryError: function () {
     return _queryError
   },
 
+  getThreadResult: function () {
+    return _threadResult
+  },
+
   setThreadQuery: function (threadQuery) {
     _threadQuery = threadQuery
     _threads = []
+    emitChange.apply(this)
+  },
+
+  setSelectedThreadID: function (threadID) {
+    _selectedThreadID = threadID
     emitChange.apply(this)
   },
 
@@ -50,8 +60,8 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     }
   },
 
-  setSelectedThread: function (thread) {
-    _selectedThread = thread
+  setThreadResult: function (threadResult) {
+    _threadResult = threadResult
     emitChange.apply(this)
   }
 })

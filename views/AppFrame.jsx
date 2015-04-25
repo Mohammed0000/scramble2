@@ -16,12 +16,23 @@ module.exports = React.createClass({
   getInitialState: function () {
     return {
       screen: 'login',
+
       keybaseSession: null,
+
       accounts: [],
       selectedAccount: null,
       isAddingAccount: false,
+
+      threadQuery: null,
       threads: [],
-      selectedThread: null
+      selectedThreadID: null,
+      threadResult: null,
+      selectedMessageID: null,
+
+      contactQuery: null,
+      contacts: [],
+      selectedContactID: null,
+      selectedContact: null
     }
   },
 
@@ -59,7 +70,7 @@ module.exports = React.createClass({
     if (selectedAccount !== this.state.selectedAccount) {
       this.setState({
         threads: [],
-        selectedThread: null
+        threadResult: null
       })
       InboxActions.queryThreads(selectedAccount.emailAddress, "", 1)
     }
@@ -72,27 +83,35 @@ module.exports = React.createClass({
   },
 
   onInboxStoreChanged: function () {
-    console.log("InboxStoreChanged")
+    console.log("InboxStoreChanged, threadResult " + InboxStore.getThreadResult())
     var errorMessage = InboxStore.getQueryError()
     if (errorMessage) {
       alert(errorMessage)
     }
-    var threads = InboxStore.getThreads()
     this.setState({
-      threads: threads,
-      selectedThread: (threads && threads[0] || null)
+      threads: InboxStore.getThreads(),
+      selectedThreadID: InboxStore.getSelectedThreadID(),
+      threadResult: InboxStore.getThreadResult()
     })
   },
 
   render: function () {
     if (this.state.screen === 'inbox') {
+      var selectedThread;
+      if (this.state.threadResult !== null && 
+          this.state.threadResult.threadID === this.state.selectedThreadID) {
+        selectedThread = this.state.threadResult.thread
+      } else {
+        selectedThread = null
+      }
       var inbox = (
         <Inbox
           keybaseSession={this.state.keybaseSession}
           accounts={this.state.accounts}
           selectedAccount={this.state.selectedAccount}
           threads={this.state.threads}
-          selectedThreads={null} />)
+          selectedThreadID={this.state.selectedThreadID}
+          selectedThread={selectedThread} />)
       var modal = this.state.isAddingAccount ? (<AddAccountModal />) : null
       return (
         <div>

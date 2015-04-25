@@ -14,6 +14,7 @@ module.exports = React.createClass({
     accounts: React.PropTypes.array.isRequired,
     selectedAccount: React.PropTypes.object,
     threads: React.PropTypes.array.isRequired,
+    selectedThreadID: React.PropTypes.string,
     selectedThread: React.PropTypes.object
   },
 
@@ -37,8 +38,8 @@ module.exports = React.createClass({
     InboxActions.queryThreads('dcposch@gmail.com', queryString, 1)
   },
 
-  selectThread: function (scrambleMailId) {
-    // TODO: fire a select action
+  selectThread: function (threadID) {
+    InboxActions.selectThread ('dcposch@gmail.com', threadID)
   },
 
   getThreadID: function (message) {
@@ -123,10 +124,25 @@ module.exports = React.createClass({
   },
 
   renderInboxState: function () {
+    var thread = this.props.selectedThread
+    if (thread === null) {
+      return null
+    }
+    var subject = thread.messages[0].subject
+    var messageElems = thread.messages.map(function(message) {
+      return (
+        <p>
+          <h3>from {message.fromAddress} to {message.toAddress}</h3>
+          <pre>
+            {message.snippet}
+          </pre>
+        </p>)
+    })
+
     return (
       <div>
-        <h1>Inbox Zero. Congrats!</h1>
-        <p>TODO: check whether it is actually inbox zero. Display stats.</p>
+        <h1>{subject}</h1>
+        {messageElems}
       </div>)
   }
 })
