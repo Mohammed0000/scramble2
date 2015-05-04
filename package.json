@@ -13,7 +13,8 @@
     "scramble-imap": "*",
     "object-assign": "*",
     "mkdirp": "*",
-    "deep-equal": "*"
+    "deep-equal": "*",
+    "concat-stream": "*"
   },
   "devDependencies": {
     "react-tools": "*",

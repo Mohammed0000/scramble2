@@ -1,6 +1,5 @@
 var EventEmitter = require('events').EventEmitter
 var path = require('path')
-var fs = require('fs')
 var mkdirp = require('mkdirp')
 var objectAssign = require('object-assign')
 var ScrambleIMAP = require('scramble-imap')
@@ -138,24 +137,11 @@ function getSyncStateForAddress (emailAddress) {
  * downloaded via IMAP but before the body is saved to a file.
  */
 function onMessage (emailAddress, msg) {
-  // Parse out the message ID
-  // var gmailThrId = msg.attributes['x-gm-thrid']
-  var gmailMsgId = msg.attributes['x-gm-msgid']
-  var uid = gmailMsgId || msg.attributes.uid
-
-  // Save to file
-  var syncState = getSyncStateForAddress(emailAddress)
-  var outputStream = fs.createWriteStream(path.join(_mailDir, emailAddress, uid + '.txt'))
-  outputStream.on('close', function () {
-    syncState.numDownloaded++
-    emitSyncChanged.apply(this)
-  }.bind(this))
-  msg.bodyStream.pipe(outputStream)
-
   // Save it to the index
+  var syncState = getSyncStateForAddress(emailAddress)
   var mailRepo = getOrCreateMailRepo(emailAddress)
   mailRepo.saveRawEmail(msg.bodyStream, function () {
-    syncState.numIndexed++
+    syncState.numDownloaded++
     emitSyncChanged.apply(this)
   }.bind(this))
 }
