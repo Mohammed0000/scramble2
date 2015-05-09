@@ -37,12 +37,18 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   },
 
   setThreadQuery: function (threadQuery) {
+    if (deepEquals(threadQuery, _threadQuery)) {
+      return
+    }
     _threadQuery = threadQuery
     _threads = []
     emitChange.apply(this)
   },
 
   setSelectedThreadID: function (threadID) {
+    if (_selectedThreadID === threadID) {
+      return
+    }
     _selectedThreadID = threadID
     emitChange.apply(this)
   },
@@ -53,13 +59,17 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   setQueryResult: function (queryResult) {
     // Ignore results that come in late for what is no
     // longer the current query and page
-    if (deepEquals(queryResult.threadQuery, _threadQuery)) {
-      _queryError = queryResult.error
-      _threads = queryResult.threads
-      emitChange.apply(this)
+    if (!deepEquals(queryResult.threadQuery, _threadQuery)) {
+      return
     }
+    _queryError = queryResult.error
+    _threads = queryResult.threads
+    emitChange.apply(this)
   },
 
+  /**
+   * Expects a result in the form {threadID, messages}
+   */
   setThreadResult: function (threadResult) {
     _threadResult = threadResult
     emitChange.apply(this)

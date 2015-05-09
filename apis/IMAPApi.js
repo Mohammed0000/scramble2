@@ -12,6 +12,11 @@ var _mailRepos = {}
 var _imapConnections = {}
 var _mailDir = LocalStore.getAppDir()
 
+var _accountTypes = {
+  GMAIL: 'GMAIL',
+  OTHER: 'OTHER'
+}
+
 /**
  * Provides everything the UI needs to sync IMAP accounts.
  * Uses scramble-imap and scramble-mail-repo under the hood.
@@ -29,34 +34,40 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
     return _accountSyncState
   },
 
+  /**
+   * Returns the account with given email address,
+   * or null if an account w/ that address doesn't exist
+   */
+  getAccount: function (emailAddress) {
+    for (var i = 0; i < _accounts.length; i++) {
+      if (_accounts[i].emailAddress === emailAddress) {
+        return _accounts[i]
+      }
+    }
+    return null
+  },
+
   addGmailAccount: function (emailAddress, password) {
-    var imap = ScrambleIMAP.createForGmail(emailAddress, password)
+    if (this.getAccount(emailAddress) !== null) {
+      throw new Error('Account ' + emailAddres + ' already exists')
+    }
+
+    // First, create an IMAP connection and try to download mail
+    var account = {
+      type: _accountTypes.GMAIL,
+      emailAddress: emailAddress,
+      password: password
+    }
+    var imap = createIMAPConnection.call(this, account)
     imap.fetchAll()
 
+    // Only save the account once we've connected successfully
     imap.once('box', function (boxStats) {
       // Connected successfully. Add this account to our list of accounts
       console.log('Connected successfully. Inbox stats: ' + JSON.stringify(boxStats))
-
-      var account = {
-        type: 'GMAIL',
-        emailAddress: emailAddress,
-        password: password
-      }
       LocalStore.saveAccount(account)
       _accounts.push(account)
-
-      var syncState = getSyncStateForAddress(emailAddress)
-      syncState.numToDownload = boxStats.messages.total
-
-      mkdirp.sync(path.join(_mailDir, emailAddress))
-
-      emitAccountsChanged.apply(this)
-      emitSyncChanged.apply(this)
-    }.bind(this))
-
-    imap.on('message', onMessage.bind(this, emailAddress))
-    imap.on('error', onError.bind(this, emailAddress))
-    addIMAPConnection(emailAddress, imap)
+    })
   },
 
   addIMAPAccount: function (server, port, username, password) {
@@ -84,10 +95,12 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   startSyncingAllAccounts: function () {
     LocalStore.loadAccounts((function(error, accountRows) {
       _accounts = accountRows
-      _accounts.forEach(function(account) {
+      _accounts.forEach((function(account) {
         getOrCreateMailRepo(account.emailAddress)
-      })
-      // TODO: start sync
+        var imap = createIMAPConnection.call(this, account)
+        //TODO: fetch latest, not all
+        imap.fetchAll()
+      }).bind(this))
       emitAccountsChanged.apply(this)
     }).bind(this))
   }
@@ -133,7 +146,7 @@ function getSyncStateForAddress (emailAddress) {
 }
 
 /**
- * Private event handler, fires after each message's headers are
+ * Instance method. Fires after each message's headers are
  * downloaded via IMAP but before the body is saved to a file.
  */
 function onMessage (emailAddress, msg) {
@@ -168,7 +181,7 @@ function onMessage (emailAddress, msg) {
  */
 
 /**
- * Handles any kind of sync error.
+ * Instance method. Handles any kind of sync error.
  * For example: if the connection to the IMAP server dies, or if you're offline.
  */
 function onError (emailAddress, error) {
@@ -179,13 +192,48 @@ function onError (emailAddress, error) {
 }
 
 /**
+ * Instance method.
  * Adds a scramble-imap connection to the set of open connections.
  */
-function addIMAPConnection(emailAddress, imap) {
+function createIMAPConnection(account) {
+  var emailAddress = account.emailAddress
   if (_imapConnections[emailAddress]) {
-    throw new Error('There\'s already an active IMAP connection for ' + emailAddress)
+     console.warn('Disconnecting IMAP connection for ' + emailAddress)
+     _imapConnections[emailAddress].destroy()
+  }
+
+  // Create IMAP connection from account info
+  var imap
+  if (account.type === _accountTypes.GMAIL) {
+    imap = ScrambleIMAP.createForGmail(emailAddress, account.password)
+  } else {
+    throw new Error('Account type ' + account.type + ' for ' + emailAddress + ' unsupported')
   }
   _imapConnections[emailAddress] = imap
+
+  addIMAPEventHandlers.call(this, emailAddress, imap)
+
+  return imap
+}
+
+/**
+ * Instance method. Handle each downloaded message, error, etc
+ */
+function addIMAPEventHandlers(emailAddress, imap) {
+  imap.once('box', function(boxStats) {
+    // Create a folder for raw email messages, one per file
+    mkdirp.sync(path.join(_mailDir, emailAddress))
+
+    // Update the sync state: 0 downloaded, n left to download
+    var syncState = getSyncStateForAddress(emailAddress)
+    syncState.numToDownload = boxStats.messages.total
+
+    emitAccountsChanged.apply(this)
+    emitSyncChanged.apply(this)
+  }.bind(this))
+
+  imap.on('message', onMessage.bind(this, emailAddress))
+  imap.on('error', onError.bind(this, emailAddress))
 }
 
 function getOrCreateMailRepo (emailAddress) {

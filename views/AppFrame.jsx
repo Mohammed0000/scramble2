@@ -72,7 +72,7 @@ module.exports = React.createClass({
         threads: [],
         threadResult: null
       })
-      InboxActions.queryThreads(selectedAccount.emailAddress, "", 1)
+      InboxActions.queryThreads(selectedAccount.emailAddress, '', 1)
     }
 
     this.setState({
@@ -83,7 +83,7 @@ module.exports = React.createClass({
   },
 
   onInboxStoreChanged: function () {
-    console.log("InboxStoreChanged, threadResult " + InboxStore.getThreadResult())
+    console.log('InboxStoreChanged, threadResult ' + InboxStore.getThreadResult())
     var errorMessage = InboxStore.getQueryError()
     if (errorMessage) {
       alert(errorMessage)

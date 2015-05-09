@@ -48,6 +48,7 @@ function emitQueryResult(threadQuery, err, msgs) {
 // TODO: take a thread, not a message
 function emitThreadResult(emailAddress, threadID, err, message) {
   var thread = {
+    threadID: threadID,
     messages: [message] 
   }
 
