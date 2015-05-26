@@ -129,13 +129,12 @@ module.exports = React.createClass({
       return null
     }
     var subject = thread.messages[0].subject
+    var sanitizedHtmlBody = thread.messages[0].sanitizedHtmlBody
     var messageElems = thread.messages.map(function(message) {
       return (
         <p>
           <h3>from {message.fromAddress} to {message.toAddress}</h3>
-          <pre>
-            {message.snippet}
-          </pre>
+          <div className="body" dangerouslySetInnerHTML={{__html: sanitizedHtmlBody}} />
         </p>)
     })
 

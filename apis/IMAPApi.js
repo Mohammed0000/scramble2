@@ -99,7 +99,7 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
         getOrCreateMailRepo(account.emailAddress)
         var imap = createIMAPConnection.call(this, account)
         //TODO: fetch latest, not all
-        imap.fetchAll()
+        // imap.fetchAll()
       }).bind(this))
       emitAccountsChanged.apply(this)
     }).bind(this))

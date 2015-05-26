@@ -23,20 +23,9 @@ App.on('ready', function () {
   mainWindow.webContents.on('did-finish-load', function () {
     IMAPApi.startSyncingAllAccounts()
 
-    //demoMailRepo()
     //demoKeybase()
   })
 })
-
-// Demo: searchable mail repo
-function demoMailRepo () {
-  var mailRepo = new ScrambleMailRepo(path.join(process.env.HOME, 'scramble-test-dir'))
-  mailRepo.search('hello', function (err, msgs) {
-    if (err) return console.error(err)
-    console.log('Sending ' + msgs.length + ' msgs from browser to renderer')
-    mainWindow.webContents.send('inbox', msgs)
-  })
-}
 
 // Demo: Keybase
 function demoKeybase () {
