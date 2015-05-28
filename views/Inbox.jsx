@@ -132,7 +132,7 @@ module.exports = React.createClass({
     var subject = sanitizedMessage.subject
     var messageElems = thread.sanitizedMessages.map(function(message) {
       return (
-        <p>
+        <p key={message.scrambleMailId}>
           <h3>from {message.fromAddress} to {message.toAddress}</h3>
           <div className="body" dangerouslySetInnerHTML={{__html: message.sanitizedHtmlBody}} />
         </p>)

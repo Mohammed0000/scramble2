@@ -4,7 +4,6 @@ var remoteSearchAPI = remote.require('./apis/SearchApi')
 
 module.exports = {
   queryThreads: function (emailAddress, queryString, page) {
-    console.log('InboxActions.queryThreads')
     var threadQuery = {
       emailAddress: emailAddress,
       queryString: queryString,

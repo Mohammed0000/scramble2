@@ -83,7 +83,6 @@ module.exports = React.createClass({
   },
 
   onInboxStoreChanged: function () {
-    console.log('InboxStoreChanged, threadResult ' + InboxStore.getThreadResult())
     var errorMessage = InboxStore.getQueryError()
     if (errorMessage) {
       alert(errorMessage)
