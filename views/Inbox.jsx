@@ -43,11 +43,11 @@ module.exports = React.createClass({
   },
 
   getThreadID: function (message) {
-    return message.scrambleMailId
+    return message.scrambleThreadId
   },
 
-  renderThread: function (message) {
-    return (<div>{message.subject}</div>)
+  renderThread: function (thread) {
+    return (<div dangerouslySetInnerHTML={{__html:thread.sanitizedSnippetHTML}} />)
   },
 
   render: function () {
@@ -128,13 +128,13 @@ module.exports = React.createClass({
     if (thread === null) {
       return null
     }
-    var subject = thread.messages[0].subject
-    var sanitizedHtmlBody = thread.messages[0].sanitizedHtmlBody
-    var messageElems = thread.messages.map(function(message) {
+    var sanitizedMessage = thread.sanitizedMessages[0]
+    var subject = sanitizedMessage.subject
+    var messageElems = thread.sanitizedMessages.map(function(message) {
       return (
         <p>
           <h3>from {message.fromAddress} to {message.toAddress}</h3>
-          <div className="body" dangerouslySetInnerHTML={{__html: sanitizedHtmlBody}} />
+          <div className="body" dangerouslySetInnerHTML={{__html: message.sanitizedHtmlBody}} />
         </p>)
     })
 

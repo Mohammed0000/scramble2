@@ -9,20 +9,20 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   queryThreads: function (threadQuery) {
     var mailRepo = IMAPApi.getMailRepo(threadQuery.emailAddress)
     if (!mailRepo) {
-      return emitQueryResult.call(this, threadQuery, getErrorMessage(threadQuery.emailAddress), [])
+      var errMsg = getErrorMessage(threadQuery.emailAddress)
+      return emitQueryResult.call(this, threadQuery, errMsg, [])
     }
-    mailRepo.search(threadQuery.queryString, emitQueryResult.bind(this, threadQuery))
+    mailRepo.searchThreads(threadQuery.queryString, emitQueryResult.bind(this, threadQuery))
   },
 
   loadThread: function (emailAddress, threadID) {
     var mailRepo = IMAPApi.getMailRepo(emailAddress)
     if (!mailRepo) {
-      return emitThreadResult.call(this, emailAddress, threadID, getErrorMessage(emailAddress), null)
+      var errMsg = getErrorMessage(emailAddress)
+      return emitThreadResult.call(this, emailAddress, threadID, errMsg, null)
     }
 
-    //TODO: threads, not messages
-    //mailRepo.getThread(threadID, emitThreadResult.bind(this, emailAddress, threadID))
-    mailRepo.getMessage(threadID, emitThreadResult.bind(this, emailAddress, threadID))
+    mailRepo.getThread(threadID, emitThreadResult.bind(this, emailAddress, threadID))
   },
 
   loadCleanHTML: function (emailAddress, scrambleMailId) {
@@ -45,13 +45,8 @@ function emitQueryResult(threadQuery, err, msgs) {
   }))
 }
 
-// TODO: take a thread, not a message
-function emitThreadResult(emailAddress, threadID, err, message) {
-  var thread = {
-    threadID: threadID,
-    messages: [message] 
-  }
-
+function emitThreadResult(emailAddress, threadID, err, thread) {
+  // `thread` contains scrambleThreadId and sanitizedMessages
   this.emit('thread', JSON.stringify({
     emailAddress: emailAddress,
     threadID: threadID,
