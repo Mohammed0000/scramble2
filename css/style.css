@@ -17,6 +17,19 @@ body {
   font-weight: 400;
   src: local('Droid Sans Mono'), local('DroidSansMono'), url(/css/droid-sans-mono.ttf) format('truetype');
 }
+.profile-pic {
+  width:100px;
+  height:100px;
+  border-radius:50px;
+}
+.keybase-logo {
+  font-size:0.8em;
+  color:#aaa;
+  margin: 5px;
+}
+.keybase-user {
+  margin: 5px;
+}
 
 
 /*

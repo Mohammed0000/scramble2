@@ -55,7 +55,10 @@ module.exports = React.createClass({
         this.renderWelcome() :
         this.renderInboxState())
     var imapAccountButton = this.renderIMAPAccountButton()
-    var keybaseUsername = this.props.keybaseSession.me.id
+    var keybaseUser = this.props.keybaseSession.me
+    var keybaseUsername = keybaseUser.id
+    var keybaseImageURL =
+        (keybaseUser.pictures && keybaseUser.pictures.primary.url) || 'img/anon.png'
 
     return (
       <div>
@@ -63,9 +66,14 @@ module.exports = React.createClass({
         <div className='container'>
           <div className='row'>
             <div className='col-md-4'>
-              <p>Welcome, {keybaseUsername}!</p>
-
-              {imapAccountButton}
+              <div className='row'>
+                <div className='col-md-6'>
+                  <img src={keybaseImageURL} className='profile-pic' />
+                  <span className='keybase-logo'>KEYBASE</span>
+                  <span className='keybase-user'>{keybaseUsername}</span>
+                </div>
+                <div className='col-md-6'>{imapAccountButton}</div>
+              </div>
 
               <SearchList
                 data={this.props.threads}
@@ -73,7 +81,6 @@ module.exports = React.createClass({
                 keyFunc={this.getThreadID}
                 onSelect={this.selectThread}
                 onSearch={this.searchThreads}/>
-
             </div>
             <div className='col-md-8'>
               {contentElem}
@@ -109,7 +116,7 @@ module.exports = React.createClass({
           Add Account
         </BS.MenuItem>)
       return (
-        <BS.DropdownButton title={selectedEmailAddress} onClick={this.onSelectAccount}>
+        <BS.DropdownButton bsStyle="link" title={selectedEmailAddress} onClick={this.onSelectAccount}>
           {accountElems}
         </BS.DropdownButton>)
     }
