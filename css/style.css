@@ -5,6 +5,7 @@
 body {
   overflow-y: scroll;
 }
+
 .deemphasize,.still-decrypting {
   color: #888;
 }
@@ -29,6 +30,13 @@ body {
 }
 .keybase-user {
   margin: 5px;
+}
+.thread {
+  margin: 0 0 50px 0;
+}
+.thread-subject {
+  font-size: 2em;
+  margin-top: 7px;
 }
 .message {
   position: relative;

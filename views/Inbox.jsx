@@ -139,19 +139,39 @@ module.exports = React.createClass({
     }
     var sanitizedMessage = thread.sanitizedMessages[0]
     var subject = sanitizedMessage.subject
-    var messageElems = thread.sanitizedMessages.map(function(message) {
+    var messageElems = thread.sanitizedMessages.map((function(message) {
+      if (message.from.length !== 1) {
+        console.warn('Expected message.from to be an array of one element, found ' +
+          JSON.stringify(message.from))
+      }
+      var fromElem = this.renderNameAddress(message.from[0])
+      var recipients = [].concat(message.to, message.cc || [], message.bcc || [])
+      var toElems = recipients.map(this.renderNameAddress)
+      var toListElems = new Array(toElems.length * 2 - 1)
+      for (var i = 0; i < toElems.length; i++) {
+        toListElems[i*2] = toElems[i]
+        if (i === toElems.length - 2) {
+          toListElems[i*2 + 1] = (<span> and </span>)
+        } else if (i < toElems.length - 2) {
+          toListElems[i*2 + 1] = (<span>, </span>)
+        }
+      }
       return (
-        <p key={message.scrambleMailId} className='message'>
-          <h3>from {message.from} to {message.to}</h3>
-          <SandboxFrame className='message-body' 
+        <div key={message.scrambleMailId} className='message'>
+          <div className='message-from-to'>from {fromElem} to {toListElems}</div>
+          <SandboxFrame className='message-body'
             sanitizedHtml={message.sanitizedHtmlBody} />
-        </p>)
-    })
+        </div>)
+    }).bind(this))
 
     return (
       <div className='thread'>
-        <h1>{subject}</h1>
+        <h1 className='thread-subject'>{subject}</h1>
         {messageElems}
       </div>)
+  },
+
+  renderNameAddress: function (nameAddress) {
+    return (<BS.Label>{nameAddress.name || nameAddress.address}</BS.Label>)
   }
 })
