@@ -7,7 +7,7 @@ var objectAssign = require('object-assign')
 // If needed, things like the colors could be turned into props.
 var styles = {
   footer: {
-    position: 'absolute',
+    position: 'fixed',
     bottom: 0,
     width: '100%',
     height: 35,
