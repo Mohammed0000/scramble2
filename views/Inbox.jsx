@@ -5,6 +5,8 @@ var SearchList = require('./SearchList')
 var StatusBar = require('./StatusBar')
 var InboxActions = require('../actions/InboxActions')
 var IMAPActions = require('../actions/IMAPActions')
+var SandboxFrame = require('../views/SandboxFrame')
+
 
 module.exports = React.createClass({
   displayName: 'Inbox',
@@ -139,14 +141,15 @@ module.exports = React.createClass({
     var subject = sanitizedMessage.subject
     var messageElems = thread.sanitizedMessages.map(function(message) {
       return (
-        <p key={message.scrambleMailId}>
-          <h3>from {message.fromAddress} to {message.toAddress}</h3>
-          <div className="body" dangerouslySetInnerHTML={{__html: message.sanitizedHtmlBody}} />
+        <p key={message.scrambleMailId} className='message'>
+          <h3>from {message.from} to {message.to}</h3>
+          <SandboxFrame className='message-body' 
+            sanitizedHtml={message.sanitizedHtmlBody} />
         </p>)
     })
 
     return (
-      <div>
+      <div className='thread'>
         <h1>{subject}</h1>
         {messageElems}
       </div>)
