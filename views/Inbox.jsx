@@ -151,14 +151,15 @@ module.exports = React.createClass({
       for (var i = 0; i < toElems.length; i++) {
         toListElems[i*2] = toElems[i]
         if (i === toElems.length - 2) {
-          toListElems[i*2 + 1] = (<span> and </span>)
+          toListElems[i*2 + 1] = (<span key={"to-delimiter-"+i}> and </span>)
         } else if (i < toElems.length - 2) {
-          toListElems[i*2 + 1] = (<span>, </span>)
+          toListElems[i*2 + 1] = (<span key={"to-delimiter-"+i}>, </span>)
         }
       }
       return (
         <div key={message.scrambleMailId} className='message'>
-          <div className='message-from-to'>from {fromElem} to {toListElems}</div>
+          <div className='message-from-to'>from {fromElem}</div>
+          <div className='message-from-to'>to {toListElems}</div>
           <SandboxFrame className='message-body'
             sanitizedHtml={message.sanitizedHtmlBody} />
         </div>)
@@ -166,12 +167,12 @@ module.exports = React.createClass({
 
     return (
       <div className='thread'>
-        <h1 className='thread-subject'>{subject}</h1>
+        <h1 key="header" className='thread-subject'>{subject}</h1>
         {messageElems}
       </div>)
   },
 
-  renderNameAddress: function (nameAddress) {
-    return (<BS.Label>{nameAddress.name || nameAddress.address}</BS.Label>)
+  renderNameAddress: function (nameAddress, i) {
+    return (<BS.Label key={"to-"+i}>{nameAddress.name || nameAddress.address}</BS.Label>)
   }
 })

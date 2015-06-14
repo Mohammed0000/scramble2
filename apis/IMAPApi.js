@@ -49,7 +49,7 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
 
   addGmailAccount: function (emailAddress, password) {
     if (this.getAccount(emailAddress) !== null) {
-      throw new Error('Account ' + emailAddres + ' already exists')
+      throw new Error('Account ' + emailAddress + ' already exists')
     }
 
     // First, create an IMAP connection and try to download mail
@@ -133,8 +133,7 @@ function emitAccountsChanged () {
  */
 function getSyncStateForAddress (emailAddress) {
   if (!_accountSyncState[emailAddress]) {
-    _accountSyncState[emailAddress] = {
-      numToDownload: 0,
+    return {
       numDownloaded: 0,
       numIndexed: 0,
       numToUpload: 0,
