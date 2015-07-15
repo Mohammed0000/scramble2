@@ -1,10 +1,7 @@
-var path = require('path')
 var Keybase = require('node-keybase')
 var App = require('app')
 var BrowserWindow = require('browser-window')
 var IMAPApi = require('./apis/IMAPApi')
-var SearchApi = require('./apis/SearchApi')
-var ScrambleMailRepo = require('scramble-mail-repo')
 
 var mainWindow = null
 
@@ -22,8 +19,9 @@ App.on('ready', function () {
 
   mainWindow.webContents.on('did-finish-load', function () {
     IMAPApi.startSyncingAllAccounts()
-
-    //demoKeybase()
+    if (false) {
+      demoKeybase()
+    }
   })
 })
 

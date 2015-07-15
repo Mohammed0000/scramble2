@@ -93,16 +93,20 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
    * TODO: split out initialize() to just load from sqlite?
    */
   startSyncingAllAccounts: function () {
-    LocalStore.loadAccounts((function(error, accountRows) {
+    LocalStore.loadAccounts(function (err, accountRows) {
+      if (err) {
+        // TODO: retry? local DB should always be accessible
+        return
+      }
       _accounts = accountRows
-      _accounts.forEach((function(account) {
+      _accounts.forEach(function (account) {
         getOrCreateMailRepo(account.emailAddress)
-        var imap = createIMAPConnection.call(this, account)
-        //TODO: fetch latest, not all
+        // TODO: fetch latest, not all
+        // var imap = createIMAPConnection.call(this, account)
         // imap.fetchAll()
-      }).bind(this))
+      })
       emitAccountsChanged.apply(this)
-    }).bind(this))
+    }.bind(this))
   }
 })
 
@@ -123,7 +127,7 @@ function emitSyncChanged () {
 }
 
 function emitAccountsChanged () {
-  console.log("emitAccountsChanged "+JSON.stringify(this.getAccounts()))
+  console.log('emitAccountsChanged ' + JSON.stringify(this.getAccounts()))
   this.emit('accountsChanged', JSON.stringify(this.getAccounts()))
 }
 
@@ -194,11 +198,11 @@ function onError (emailAddress, error) {
  * Instance method.
  * Adds a scramble-imap connection to the set of open connections.
  */
-function createIMAPConnection(account) {
+function createIMAPConnection (account) {
   var emailAddress = account.emailAddress
   if (_imapConnections[emailAddress]) {
-     console.warn('Disconnecting IMAP connection for ' + emailAddress)
-     _imapConnections[emailAddress].destroy()
+    console.warn('Disconnecting IMAP connection for ' + emailAddress)
+    _imapConnections[emailAddress].destroy()
   }
 
   // Create IMAP connection from account info
@@ -218,8 +222,8 @@ function createIMAPConnection(account) {
 /**
  * Instance method. Handle each downloaded message, error, etc
  */
-function addIMAPEventHandlers(emailAddress, imap) {
-  imap.once('box', function(boxStats) {
+function addIMAPEventHandlers (emailAddress, imap) {
+  imap.once('box', function (boxStats) {
     // Create a folder for raw email messages, one per file
     mkdirp.sync(path.join(_mailDir, emailAddress))
 

@@ -63,7 +63,7 @@ module.exports = React.createClass({
     var isAddingAccount = IMAPStore.getNewAccount() !== null
 
     // If the selected account has changed, kick off a new
-    // query to get the latest threads. 
+    // query to get the latest threads.
     // TODO: does this logic belong in InboxActions?
     // The state (selectedAccount) prob belongs in IMAPStore
     // ...and prob should be saved to the DB thru IMAPApi
@@ -85,7 +85,8 @@ module.exports = React.createClass({
   onInboxStoreChanged: function () {
     var errorMessage = InboxStore.getQueryError()
     if (errorMessage) {
-      alert(errorMessage)
+      // TODO: display error, probably in the status bar
+      console.error(errorMessage)
     }
     this.setState({
       threads: InboxStore.getThreads(),
@@ -96,8 +97,8 @@ module.exports = React.createClass({
 
   render: function () {
     if (this.state.screen === 'inbox') {
-      var selectedThread;
-      if (this.state.threadResult !== null && 
+      var selectedThread
+      if (this.state.threadResult !== null &&
           this.state.threadResult.threadID === this.state.selectedThreadID) {
         selectedThread = this.state.threadResult.thread
       } else {

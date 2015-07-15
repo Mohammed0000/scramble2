@@ -33,11 +33,11 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
 
 EventEmitter.call(module.exports)
 
-function getErrorMessage(emailAddress) {
+function getErrorMessage (emailAddress) {
   return 'Can\'t find email database for ' + emailAddress
 }
 
-function emitQueryResult(threadQuery, err, msgs) {
+function emitQueryResult (threadQuery, err, msgs) {
   this.emit('queryResult', JSON.stringify({
     threadQuery: threadQuery,
     error: err,
@@ -45,7 +45,7 @@ function emitQueryResult(threadQuery, err, msgs) {
   }))
 }
 
-function emitThreadResult(emailAddress, threadID, err, thread) {
+function emitThreadResult (emailAddress, threadID, err, thread) {
   // `thread` contains scrambleThreadId and sanitizedMessages
   this.emit('thread', JSON.stringify({
     emailAddress: emailAddress,
@@ -54,4 +54,3 @@ function emitThreadResult(emailAddress, threadID, err, thread) {
     thread: thread
   }))
 }
-

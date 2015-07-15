@@ -1,4 +1,4 @@
-var remote = require('remote') 
+var remote = require('remote')
 var InboxStore = require('../stores/InboxStore')
 var remoteSearchAPI = remote.require('./apis/SearchApi')
 
@@ -28,4 +28,3 @@ remoteSearchAPI.on('thread', function (threadResultJson) {
   var threadResult = JSON.parse(threadResultJson)
   InboxStore.setThreadResult(threadResult)
 })
-

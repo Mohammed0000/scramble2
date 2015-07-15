@@ -86,6 +86,6 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
 
 EventEmitter.call(module.exports)
 
-function emitChange() {
+function emitChange () {
   this.emit('change')
 }

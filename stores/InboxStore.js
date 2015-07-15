@@ -1,7 +1,7 @@
 /**
  * Stores the current search query, the currently displayed thread,
- * and the decrypted, HTML-sanitized (SanitizedMessage) objects in that in thread. 
- * 
+ * and the decrypted, HTML-sanitized (SanitizedMessage) objects in that in thread.
+ *
  * TODO: assumes inbox. Parameterize by box so we can handle Outbox, Sent, etc
  */
 
@@ -17,7 +17,7 @@ var _queryError = null
 
 module.exports = objectAssign({}, EventEmitter.prototype, {
   getThreadQuery: function () {
-    return _query
+    return _threadQuery
   },
 
   getThreads: function () {
@@ -76,6 +76,6 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
   }
 })
 
-function emitChange() {
+function emitChange () {
   this.emit('change')
 }

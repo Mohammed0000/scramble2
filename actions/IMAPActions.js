@@ -10,7 +10,6 @@ module.exports = {
     // Try connecting to the account to download mail
     var emailAddress = /@/.test(username) ? username : (username + '@gmail.com')
     remoteIMAPApi.addGmailAccount(emailAddress, password)
-    _newAccount = null
   },
 
   addIMAPAccount: function (server, port, username, password) {

@@ -7,7 +7,6 @@ var InboxActions = require('../actions/InboxActions')
 var IMAPActions = require('../actions/IMAPActions')
 var SandboxFrame = require('../views/SandboxFrame')
 
-
 module.exports = React.createClass({
   displayName: 'Inbox',
 
@@ -41,7 +40,7 @@ module.exports = React.createClass({
   },
 
   selectThread: function (threadID) {
-    InboxActions.selectThread ('dcposch@gmail.com', threadID)
+    InboxActions.selectThread('dcposch@gmail.com', threadID)
   },
 
   getThreadID: function (message) {
@@ -51,18 +50,18 @@ module.exports = React.createClass({
   renderThread: function (thread) {
     var styleSubject = {}
     var styleSnippet = {
-      color: "#888"
+      color: '#888'
     }
     var styleEllipsis = {
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
     }
-    var snippetHTML = "&mdash; " + thread.sanitizedSnippetHTML
+    var snippetHTML = '&mdash; ' + thread.sanitizedSnippetHTML
     return (<div>
         <div style={styleEllipsis}>
           <span style={styleSubject}>{thread.subject}</span>
-          <span style={styleSnippet} dangerouslySetInnerHTML={{__html:snippetHTML}} />
+          <span style={styleSnippet} dangerouslySetInnerHTML={{__html: snippetHTML}} />
         </div>
       </div>)
   },
@@ -116,10 +115,10 @@ module.exports = React.createClass({
           Add Account
         </BS.Button>)
     } else {
-      var selectedEmailAddress = this.props.selectedAccount.emailAddress 
-      var accountElems = this.props.accounts.filter(function(account){
+      var selectedEmailAddress = this.props.selectedAccount.emailAddress
+      var accountElems = this.props.accounts.filter(function (account) {
         return account.emailAddress !== selectedEmailAddress
-      }).map(function(account) {
+      }).map(function (account) {
         return (
           <BS.MenuItem key={account.emailAddress} eventKey={account.emailAddress}>
             {account.emailAddress}
@@ -133,7 +132,10 @@ module.exports = React.createClass({
           Add Account
         </BS.MenuItem>)
       return (
-        <BS.DropdownButton bsStyle="link" title={selectedEmailAddress} onClick={this.onSelectAccount}>
+        <BS.DropdownButton
+            bsStyle="link"
+            title={selectedEmailAddress}
+            onClick={this.onSelectAccount}>
           {accountElems}
         </BS.DropdownButton>)
     }
@@ -154,7 +156,7 @@ module.exports = React.createClass({
     }
     var sanitizedMessage = thread.sanitizedMessages[0]
     var subject = sanitizedMessage.subject
-    var messageElems = thread.sanitizedMessages.map((function(message) {
+    var messageElems = thread.sanitizedMessages.map(function (message) {
       if (message.from.length !== 1) {
         console.warn('Expected message.from to be an array of one element, found ' +
           JSON.stringify(message.from))
@@ -164,11 +166,11 @@ module.exports = React.createClass({
       var toElems = recipients.map(this.renderNameAddress)
       var toListElems = new Array(toElems.length * 2 - 1)
       for (var i = 0; i < toElems.length; i++) {
-        toListElems[i*2] = toElems[i]
+        toListElems[i * 2] = toElems[i]
         if (i === toElems.length - 2) {
-          toListElems[i*2 + 1] = (<span key={"to-delimiter-"+i}> and </span>)
+          toListElems[i * 2 + 1] = (<span key={'to-delimiter-' + i}> and </span>)
         } else if (i < toElems.length - 2) {
-          toListElems[i*2 + 1] = (<span key={"to-delimiter-"+i}>, </span>)
+          toListElems[i * 2 + 1] = (<span key={'to-delimiter-' + i}>, </span>)
         }
       }
       return (
@@ -178,7 +180,7 @@ module.exports = React.createClass({
           <SandboxFrame className='message-body'
             sanitizedHtml={message.sanitizedHtmlBody} />
         </div>)
-    }).bind(this))
+    }.bind(this))
 
     return (
       <div className='thread'>
@@ -188,6 +190,6 @@ module.exports = React.createClass({
   },
 
   renderNameAddress: function (nameAddress, i) {
-    return (<BS.Label key={"to-"+i}>{nameAddress.name || nameAddress.address}</BS.Label>)
+    return (<BS.Label key={'to-' + i}>{nameAddress.name || nameAddress.address}</BS.Label>)
   }
 })

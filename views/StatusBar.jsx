@@ -90,7 +90,7 @@ module.exports = React.createClass({
 /**
  * Returns {syncStateTotals: {numToDownload, numDownloaded, ..., errors}, numAccounts}
  */
-function getIMAPSummary() {
+function getIMAPSummary () {
   return {
     syncStateTotals: IMAPStore.getSyncStateTotals(),
     numAccounts: IMAPStore.getAccounts().length

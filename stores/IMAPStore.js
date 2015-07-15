@@ -59,7 +59,7 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
    * {numToDownload, numDownloaded, numIndexed, numToUpload, numUploaded}
    */
   getSyncStateTotals: function () {
-    return _accounts.filter(function(account) {
+    return _accounts.filter(function (account) {
       return _accountSyncState[account.emailAddress]
     }).map(function (account) {
       return _accountSyncState[account.emailAddress]
@@ -106,7 +106,7 @@ module.exports = objectAssign({}, EventEmitter.prototype, {
 
 EventEmitter.call(module.exports)
 
-function verifyAndAddAccount(account) {
+function verifyAndAddAccount (account) {
   if (!this.AccountType[account.type] || !account.emailAddress) {
     throw 'Invalid account: ' + JSON.stringify(account)
   }
@@ -130,6 +130,6 @@ function getErrorMessage (err) {
   }
 }
 
-function emitChange() {
+function emitChange () {
   this.emit('change')
 }
