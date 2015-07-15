@@ -49,7 +49,22 @@ module.exports = React.createClass({
   },
 
   renderThread: function (thread) {
-    return (<div dangerouslySetInnerHTML={{__html:thread.sanitizedSnippetHTML}} />)
+    var styleSubject = {}
+    var styleSnippet = {
+      color: "#888"
+    }
+    var styleEllipsis = {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+    var snippetHTML = "&mdash; " + thread.sanitizedSnippetHTML
+    return (<div>
+        <div style={styleEllipsis}>
+          <span style={styleSubject}>{thread.subject}</span>
+          <span style={styleSnippet} dangerouslySetInnerHTML={{__html:snippetHTML}} />
+        </div>
+      </div>)
   },
 
   render: function () {
