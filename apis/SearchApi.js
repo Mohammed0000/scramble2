@@ -37,11 +37,11 @@ function getErrorMessage (emailAddress) {
   return 'Can\'t find email database for ' + emailAddress
 }
 
-function emitQueryResult (threadQuery, err, msgs) {
+function emitQueryResult (threadQuery, err, threads) {
   this.emit('queryResult', JSON.stringify({
     threadQuery: threadQuery,
     error: err,
-    threads: msgs // TODO: threads, not messages
+    threads: threads
   }))
 }
 

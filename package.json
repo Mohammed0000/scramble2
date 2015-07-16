@@ -13,6 +13,7 @@
     "scramble-imap": "*",
     "object-assign": "*",
     "mkdirp": "*",
+    "moment": "*",
     "deep-equal": "*",
     "concat-stream": "*"
   },
