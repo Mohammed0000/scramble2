@@ -11,6 +11,7 @@ module.exports = React.createClass({
 
   propTypes: {
     sanitizedHtml: React.PropTypes.string.isRequired
+    // any additional props are passed thru to the <iframe>
   },
 
   render: function () {

@@ -197,12 +197,19 @@ module.exports = React.createClass({
           toListElems[i * 2 + 1] = (<span key={'to-delimiter-' + i}>, </span>)
         }
       }
+
+      // You can't use external CSS to style an iframe, and as an added layer of
+      // security on top of CAJA I want to sandbox the email body in an <iframe>
+      // So: here's a hack to set the font inline
+      var sanitizedFrameHtml = ('<html>' +
+        '<head><style>body{font-family:sans-serif; color:#333; margin: 30px 0}</style></head>' +
+        '<body>' + message.sanitizedHtmlBody)
+
       return (
         <div key={message.scrambleMailId} className='message'>
           <div className='message-from-to'>from {fromElem}</div>
           <div className='message-from-to'>to {toListElems}</div>
-          <SandboxFrame className='message-body'
-            sanitizedHtml={message.sanitizedHtmlBody} />
+          <SandboxFrame className='message-body' sanitizedHtml={sanitizedFrameHtml} />
         </div>)
     }.bind(this))
 
