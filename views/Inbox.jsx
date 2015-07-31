@@ -35,6 +35,10 @@ module.exports = React.createClass({
     console.log('Inbox.onSelectAccount ' + JSON.stringify(evt))
   },
 
+  onReply: function(evt) {
+    console.log('Inbox.onReply ' + JSON.stringify(evt))
+  },
+
   searchThreads: function (queryString) {
     // TODO: email address and page
     InboxActions.queryThreads('dcposch@gmail.com', queryString, 1)
@@ -197,6 +201,7 @@ module.exports = React.createClass({
           toListElems[i * 2 + 1] = (<span key={'to-delimiter-' + i}>, </span>)
         }
       }
+      var dateString = getDisplayNameForTimestamp(message.timestamp)
 
       // You can't use external CSS to style an iframe, and as an added layer of
       // security on top of CAJA I want to sandbox the email body in an <iframe>
@@ -205,8 +210,30 @@ module.exports = React.createClass({
         '<head><style>body{font-family:sans-serif; color:#333; margin: 30px 0}</style></head>' +
         '<body>' + message.sanitizedHtmlBody)
 
+      // TODO: standardize on either external or JS styles
+      // If JS, find a good way to encapsulate
+      var styleFlex = {
+        display: 'flex',
+        flexFlow: 'row nowrap'
+      }
+      var styleDate = {
+        fontSize: '0.9em',
+      }
+      var styleButtons = {
+        fontSize: '0.9em',
+        marginLeft: 'auto'
+      }
+
       return (
         <div key={message.scrambleMailId} className='message'>
+          <div style={styleFlex}>
+            <span style={styleDate}>{dateString}</span>
+            <span style={styleButtons}>
+              <BS.ButtonGroup>
+                <BS.Button onClick={this.onReply}>Reply</BS.Button>
+              </BS.ButtonGroup>
+            </span>
+          </div>
           <div className='message-from-to'>from {fromElem}</div>
           <div className='message-from-to'>to {toListElems}</div>
           <SandboxFrame className='message-body' sanitizedHtml={sanitizedFrameHtml} />
