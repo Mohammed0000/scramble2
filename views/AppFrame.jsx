@@ -1,6 +1,8 @@
 var React = require('react')
 var Login = require('./Login')
 var Inbox = require('./Inbox')
+var Tabs = require('./Tabs')
+var StatusBar = require('./StatusBar')
 var AddAccountModal = require('./AddAccountModal')
 var KeybaseStore = require('../stores/KeybaseStore')
 var IMAPStore = require('../stores/IMAPStore')
@@ -95,7 +97,25 @@ module.exports = React.createClass({
     })
   },
 
+  onTabSelect: function (tabName) {
+    console.log('Switching tabs to ' + tabName)
+    this.setState({
+      screen: tabName.toLowerCase()
+    })
+  },
+
+  // renders the main app frame. depending on application state, this means either:
+  // * login window
+  // * create keybase account
+  // * one of the tabs of the logged-in view
   render: function () {
+    if (this.state.screen === 'login') {
+      return (<Login />)
+    }
+
+    // the inbox, outbox, and contacts screens share a tab bar across the top
+    // and a status bar across the bottom. content is one of three different views
+    var content = null
     if (this.state.screen === 'inbox') {
       var selectedThread
       if (this.state.threadResult !== null &&
@@ -113,15 +133,23 @@ module.exports = React.createClass({
           selectedThreadID={this.state.selectedThreadID}
           selectedThread={selectedThread} />)
       var modal = this.state.isAddingAccount ? (<AddAccountModal />) : null
-      return (
+      content = (
         <div>
           {inbox}
           {modal}
         </div>)
-    } else if (this.state.screen === 'login') {
-      return (<Login />)
+    } else if (this.state.screen === 'outbox') {
+      content = (<h1>Outbox</h1>)
+    } else if (this.state.screen === 'contacts') {
+      content = (<h1>Contacts</h1>)
     } else {
       throw 'Invalid state ' + this.state.screen
     }
+    return (
+      <div>
+        <Tabs tabs={['Inbox', 'Outbox', 'Contacts']} onSelect={this.onTabSelect} />
+        {content}
+        <StatusBar />
+      </div>)
   }
 })

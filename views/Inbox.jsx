@@ -1,8 +1,6 @@
 var React = require('react')
 var BS = require('react-bootstrap')
-var Tabs = require('./Tabs')
 var SearchList = require('./SearchList')
-var StatusBar = require('./StatusBar')
 var InboxActions = require('../actions/InboxActions')
 var IMAPActions = require('../actions/IMAPActions')
 var SandboxFrame = require('../views/SandboxFrame')
@@ -32,11 +30,11 @@ module.exports = React.createClass({
   },
 
   onSelectAccount: function (evt) {
-    console.log('Inbox.onSelectAccount ' + JSON.stringify(evt))
+    console.log('Inbox.onSelectAccount')
   },
 
-  onReply: function(evt) {
-    console.log('Inbox.onReply ' + JSON.stringify(evt))
+  onReply: function (evt) {
+    console.log('Inbox.onReply')
   },
 
   searchThreads: function (queryString) {
@@ -105,35 +103,31 @@ module.exports = React.createClass({
         (keybaseUser.pictures && keybaseUser.pictures.primary.url) || 'img/anon.png'
 
     return (
-      <div>
-        <Tabs tabs={['Inbox', 'Outbox', 'Contacts']} />
-        <div className='container'>
-          <div className='row'>
-            <div className='col-md-4'>
-              <div className='row'>
-                <div className='col-md-6'>
-                  <img src={keybaseImageURL} className='profile-pic' />
-                  <span className='keybase-logo'>KEYBASE</span>
-                  <span className='keybase-user'>{keybaseUsername}</span>
-                </div>
-                <div className='col-md-6'>{imapAccountButton}</div>
+      <div className='container'>
+        <div className='row'>
+          <div className='col-md-4'>
+            <div className='row'>
+              <div className='col-md-6'>
+                <img src={keybaseImageURL} className='profile-pic' />
+                <span className='keybase-logo'>KEYBASE</span>
+                <span className='keybase-user'>{keybaseUsername}</span>
               </div>
+              <div className='col-md-6'>{imapAccountButton}</div>
+            </div>
 
-              <SearchList
-                data={this.props.threads}
-                elementFunc={this.renderThread}
-                keyFunc={this.getThreadID}
-                onSelect={this.selectThread}
-                onSearch={this.searchThreads}/>
-            </div>
-            <div className='col-md-8'>
-              {contentElem}
-            </div>
+            <SearchList
+              data={this.props.threads}
+              elementFunc={this.renderThread}
+              keyFunc={this.getThreadID}
+              onSelect={this.selectThread}
+              onSearch={this.searchThreads}/>
+          </div>
+          <div className='col-md-8'>
+            {contentElem}
           </div>
         </div>
-
-        <StatusBar />
-      </div>)
+      </div>
+    )
   },
 
   renderIMAPAccountButton: function () {
@@ -217,7 +211,7 @@ module.exports = React.createClass({
         flexFlow: 'row nowrap'
       }
       var styleDate = {
-        fontSize: '0.9em',
+        fontSize: '0.9em'
       }
       var styleButtons = {
         fontSize: '0.9em',
