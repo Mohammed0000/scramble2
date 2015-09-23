@@ -1,7 +1,8 @@
 var React = require('react')
 var Login = require('./Login')
-var Inbox = require('./Inbox')
 var Tabs = require('./Tabs')
+var Inbox = require('./Inbox')
+var Contacts = require('./Contacts')
 var StatusBar = require('./StatusBar')
 var AddAccountModal = require('./AddAccountModal')
 var KeybaseStore = require('../stores/KeybaseStore')
@@ -141,7 +142,12 @@ module.exports = React.createClass({
     } else if (this.state.screen === 'outbox') {
       content = (<h1>Outbox</h1>)
     } else if (this.state.screen === 'contacts') {
-      content = (<h1>Contacts</h1>)
+      var mockResults = [
+        {id: 1, emailAddress: 'bob@gmail.com', name: 'Bob McBob', keys: ['fake']},
+        {id: 2, emailAddress: 'joe@yamamail.com', name: 'Joe Fukuyama', keys: []},
+        {id: 3, emailAddress: 'jim@gmail.com', name: 'Jim Chen', keys: []}
+      ]
+      content = (<Contacts contactsResult={mockResults}/>)
     } else {
       throw 'Invalid state ' + this.state.screen
     }

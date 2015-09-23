@@ -68,6 +68,10 @@ module.exports = React.createClass({
       fontSize: '0.9em',
       marginLeft: 'auto'
     }
+    var styleLockIcon = {
+      paddingRight: '5px',
+      marginLeft: 'auto'
+    }
 
     // HTML
     var snippetHTML = ' &mdash; ' + thread.sanitizedSnippetHTML
@@ -80,10 +84,18 @@ module.exports = React.createClass({
     }
     var dateString = getDisplayNameForTimestamp(thread.latestTimestamp)
 
+    // TODO: populate isEncrypted in the inbox service
+    // if (thread.isEncrypted) {
+    var lockIcon = null
+    lockIcon = (<span className="glyphicon glyphicon-lock" style={styleLockIcon}></span>)
+
     return (<div>
-        <div style={styleEllipsis}>
-          <span >{thread.subject}</span>
-          <span className="deemphasize" dangerouslySetInnerHTML={{__html: snippetHTML}} />
+        <div style={styleFlex}>
+          <div style={styleEllipsis}>
+            <span>{thread.subject}</span>
+            <span className="deemphasize" dangerouslySetInnerHTML={{__html: snippetHTML}} />
+          </div>
+          {lockIcon}
         </div>
         <div style={styleFlex}>
           <span style={styleFrom}>{fromString}</span>
