@@ -2,6 +2,7 @@ var React = require('react')
 var Login = require('./Login')
 var Tabs = require('./Tabs')
 var Inbox = require('./Inbox')
+var Outbox = require('./Outbox')
 var Contacts = require('./Contacts')
 var StatusBar = require('./StatusBar')
 var AddAccountModal = require('./AddAccountModal')
@@ -140,7 +141,7 @@ module.exports = React.createClass({
           {modal}
         </div>)
     } else if (this.state.screen === 'outbox') {
-      content = (<h1>Outbox</h1>)
+      content = (<Outbox />)
     } else if (this.state.screen === 'contacts') {
       var mockResults = [
         {id: 1, emailAddress: 'bob@gmail.com', name: 'Bob McBob', keys: ['fake']},
@@ -156,6 +157,7 @@ module.exports = React.createClass({
         <Tabs tabs={['Inbox', 'Outbox', 'Contacts']} onSelect={this.onTabSelect} />
         {content}
         <StatusBar />
-      </div>)
+      </div>
+    )
   }
 })
