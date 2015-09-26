@@ -14,9 +14,12 @@ module.exports = React.createClass({
           <div className='col-md-12'>
             <h1>Outbox</h1>
           </div>
-        </div> 
+        </div>
         <div className='row'>
-          <div className='col-md-12'>
+          <div className='col-md-4'>
+
+          </div>
+          <div className='col-md-8'>
             <ComposePanel />
           </div>
         </div>

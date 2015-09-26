@@ -1,10 +1,10 @@
 var React = require('react')
 var BS = require('react-bootstrap')
 var SearchList = require('./SearchList')
+var Thread = require('./Thread')
 var InboxActions = require('../actions/InboxActions')
 var IMAPActions = require('../actions/IMAPActions')
-var SandboxFrame = require('../views/SandboxFrame')
-var moment = require('moment')
+var Stringers = require('./Stringers')
 
 module.exports = React.createClass({
   displayName: 'Inbox',
@@ -77,12 +77,12 @@ module.exports = React.createClass({
     var snippetHTML = ' &mdash; ' + thread.sanitizedSnippetHTML
     var fromAddrs = thread.fromAddresses
     var fromMaxAddrs = 2
-    var fromString = fromAddrs.slice(0, fromMaxAddrs).map(getDisplayNameForAddress).join(', ')
+    var fromString = fromAddrs.slice(0, fromMaxAddrs).map(Stringers.addressToString).join(', ')
     if (fromAddrs.length > fromMaxAddrs) {
       // eg "Bob, Joe, +2 more"
       fromString += ', +' + (fromAddrs.length - fromMaxAddrs) + ' more'
     }
-    var dateString = getDisplayNameForTimestamp(thread.latestTimestamp)
+    var dateString = Stringers.timestampToString(thread.latestTimestamp)
 
     // TODO: populate isEncrypted in the inbox service
     // if (thread.isEncrypted) {
@@ -105,9 +105,27 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    var contentElem = (this.props.selectedAccount === null ?
-        this.renderWelcome() :
-        this.renderInboxState())
+    var contentElem = this.renderContent()
+    var sidebarElem = this.renderSidebar()
+
+    return (
+      <div className='container'>
+        <div className='row'>
+          <div className='col-md-4'>
+            {sidebarElem}
+          </div>
+          <div className='col-md-8'>
+            {contentElem}
+          </div>
+        </div>
+      </div>
+    )
+  },
+
+  /**
+   * Creates the sidebar, which lets you search threads and select one to read.
+   */
+  renderSidebar: function () {
     var imapAccountButton = this.renderIMAPAccountButton()
     var keybaseUser = this.props.keybaseSession.me
     var keybaseUsername = keybaseUser.id
@@ -115,29 +133,22 @@ module.exports = React.createClass({
         (keybaseUser.pictures && keybaseUser.pictures.primary.url) || 'img/anon.png'
 
     return (
-      <div className='container'>
+      <div>
         <div className='row'>
-          <div className='col-md-4'>
-            <div className='row'>
-              <div className='col-md-6'>
-                <img src={keybaseImageURL} className='profile-pic' />
-                <span className='keybase-logo'>KEYBASE</span>
-                <span className='keybase-user'>{keybaseUsername}</span>
-              </div>
-              <div className='col-md-6'>{imapAccountButton}</div>
-            </div>
-
-            <SearchList
-              data={this.props.threads}
-              elementFunc={this.renderThread}
-              keyFunc={this.getThreadID}
-              onSelect={this.selectThread}
-              onSearch={this.searchThreads}/>
+          <div className='col-md-6'>
+            <img src={keybaseImageURL} className='profile-pic' />
+            <span className='keybase-logo'>KEYBASE</span>
+            <span className='keybase-user'>{keybaseUsername}</span>
           </div>
-          <div className='col-md-8'>
-            {contentElem}
-          </div>
+          <div className='col-md-6'>{imapAccountButton}</div>
         </div>
+
+        <SearchList
+          data={this.props.threads}
+          elementFunc={this.renderThread}
+          keyFunc={this.getThreadID}
+          onSelect={this.selectThread}
+          onSearch={this.searchThreads} />
       </div>
     )
   },
@@ -175,120 +186,21 @@ module.exports = React.createClass({
     }
   },
 
-  renderWelcome: function () {
-    return (
-      <div>
-        <h1>Welcome to Scramble!</h1>
-        <p>To get started, click Add Account.</p>
-      </div>)
-  },
-
-  renderInboxState: function () {
-    var thread = this.props.selectedThread
-    if (thread === null) {
+  /**
+   * Renders the main content pane (as opposed to header, footer, or sidebar)
+   */
+  renderContent: function () {
+    if (this.props.selectedAccount === null) {
+      return (
+        <div>
+          <h1>Welcome to Scramble!</h1>
+          <p>To get started, click Add Account.</p>
+        </div>
+      )
+    } else if (this.props.selectedThread !== null) {
+      return (<Thread thread={this.props.selectedThread} />)
+    } else {
       return null
     }
-    var sanitizedMessage = thread.sanitizedMessages[0]
-    var subject = sanitizedMessage.subject
-    var messageElems = thread.sanitizedMessages.map(function (message) {
-      if (message.from.length !== 1) {
-        console.warn('Expected message.from to be an array of one element, found ' +
-          JSON.stringify(message.from))
-      }
-      var fromElem = this.renderNameAddress(message.from[0])
-      var recipients = [].concat(message.to, message.cc || [], message.bcc || [])
-      var toElems = recipients.map(this.renderNameAddress)
-      var toListElems = new Array(toElems.length * 2 - 1)
-      for (var i = 0; i < toElems.length; i++) {
-        toListElems[i * 2] = toElems[i]
-        if (i === toElems.length - 2) {
-          toListElems[i * 2 + 1] = (<span key={'to-delimiter-' + i}> and </span>)
-        } else if (i < toElems.length - 2) {
-          toListElems[i * 2 + 1] = (<span key={'to-delimiter-' + i}>, </span>)
-        }
-      }
-      var dateString = getDisplayNameForTimestamp(message.timestamp)
-
-      // You can't use external CSS to style an iframe, and as an added layer of
-      // security on top of CAJA I want to sandbox the email body in an <iframe>
-      // So: here's a hack to set the font inline
-      var sanitizedFrameHtml = ('<html>' +
-        '<head><style>body{font-family:sans-serif; color:#333; margin: 30px 0}</style></head>' +
-        '<body>' + message.sanitizedHtmlBody)
-
-      // TODO: standardize on either external or JS styles
-      // If JS, find a good way to encapsulate
-      var styleFlex = {
-        display: 'flex',
-        flexFlow: 'row nowrap'
-      }
-      var styleDate = {
-        fontSize: '0.9em'
-      }
-      var styleButtons = {
-        fontSize: '0.9em',
-        marginLeft: 'auto'
-      }
-
-      return (
-        <div key={message.scrambleMailId} className='message'>
-          <div style={styleFlex}>
-            <span style={styleDate}>{dateString}</span>
-            <span style={styleButtons}>
-              <BS.ButtonGroup>
-                <BS.Button onClick={this.onReply}>Reply</BS.Button>
-              </BS.ButtonGroup>
-            </span>
-          </div>
-          <div className='message-from-to'>from {fromElem}</div>
-          <div className='message-from-to'>to {toListElems}</div>
-          <SandboxFrame className='message-body' sanitizedHtml={sanitizedFrameHtml} />
-        </div>)
-    }.bind(this))
-
-    return (
-      <div className='thread'>
-        <h1 key="header" className='thread-subject'>{subject}</h1>
-        {messageElems}
-      </div>)
-  },
-
-  renderNameAddress: function (nameAddress, i) {
-    return (<BS.Label key={'to-' + i}>{nameAddress.name || nameAddress.address}</BS.Label>)
   }
 })
-
-/**
- * Returns a display name for an RFC standard name-address pair.
- * For example get...("Loco Dice <loco@scramble.io>") returns "Loco Dice"
- * Also get...("<noname@scramble.io>") return "noname"
- */
-function getDisplayNameForAddress (address) {
-  var parts = address.split(/\s+/)
-  var endsWithAddress = parts[parts.length - 1].startsWith('<')
-  if (parts.length > 1 && endsWithAddress) {
-    // use name
-    var name = parts.slice(0, parts.length - 1).join(' ')
-    if (name.startsWith('"') && name.endsWith('"')) {
-      name = name.slice(1, name.length - 1)
-    }
-    return name
-  } else if (endsWithAddress) {
-    // use first part of email address, eg "hello" for "<hello@scramble.io>"
-    return parts[parts.length - 1].slice(1).split('@')[0]
-  } else {
-    // unknown format, just use the whole string
-    console.warn('Couldn\'t parse RFC name-address pair "' + address + '"')
-    return address
-  }
-}
-
-/**
- * Displays a timestamp, relative to current time.
- * For example, if it's 8am on Jan 1 2015 UTC, then:
- * - getDisplayNameForTimestamp("2014-12-31T10:00:00Z") returns "Yesterday"
- * - getDisplayNameForTimestamp("2013-12-31T10:00:00Z") returns "Dec 31, 2013"
- */
-function getDisplayNameForTimestamp (timestamp) {
-  return moment(timestamp).fromNow()
-}
