@@ -11,13 +11,14 @@ module.exports = React.createClass({
     return (
       <div className='container'>
         <div className='row'>
-          <div className='col-md-12'>
-            <h1>Outbox</h1>
-          </div>
-        </div>
-        <div className='row'>
           <div className='col-md-4'>
-
+            <ul className='list-group'>
+              <li className='list-group-item'><em>Draft</em></li>
+              <li className='list-group-item'>Encrypted Message</li>
+              <li className='list-group-item'>Encrypted Message</li>
+              <li className='list-group-item'>Encrypted Message</li>
+              <li className='list-group-item'>Encrypted Message</li>
+            </ul>
           </div>
           <div className='col-md-8'>
             <ComposePanel />
