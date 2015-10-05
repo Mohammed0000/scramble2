@@ -1,5 +1,6 @@
 var React = require('react')
 var BS = require('react-bootstrap')
+var objectAssign = require('object-assign')
 
 /**
  * Gives you typeahead search for email addresses.
@@ -14,8 +15,9 @@ module.exports = React.createClass({
 
   getInitialState: function () {
     return {
-      items: [{'name': 'Swag', 'address': 'swag@swag.com'}],
-      typeahead: ''
+      items: [],
+      typeahead: '',
+      typeaheadResults: []
     }
   },
 
@@ -27,11 +29,21 @@ module.exports = React.createClass({
       var newAddress = {'address': trimmedText}
       this.setState({
         items: this.state.items.concat([newAddress]),
-        typeahead: ""
+        typeahead: ''
       })
     } else {
       // TODO: use a search callback, show typeahead results dropdown
-      this.setState({typeahead: trimmedText})
+      var fakeData = [
+        'alice@gmail.com',
+        'albert@gmail.com',
+        'weird.al@gmail.com',
+        'bob@gmail.com',
+        'eve@gmail.com']
+      var fakeResults = fakeData
+        .filter(function (x) {return trimmedText.length > 0  && x.indexOf(trimmedText) >= 0})
+        .map(function(x){return {'address':x, 'type':'contact'}})
+
+      this.setState({typeahead: trimmedText, typeaheadResults: fakeResults})
     }
   },
 
@@ -45,6 +57,7 @@ module.exports = React.createClass({
   render: function () {
     var styleContainer = {
       width: '100%',
+      position: 'relative'
     }
     var styleTypeahead = {
       border: 'none',
@@ -59,27 +72,56 @@ module.exports = React.createClass({
       marginRight: '5px',
       verticalAlign: 'top'
     }
+    var styleDropdown = {
+      position: 'absolute',
+      left: '10px',
+      top: '30px'
+    }
+    var styleDropdownType = {
+      color: '#999',
+      fontSize: '0.8em'
+    }
+    var styleDropdownAddress = {
+      fontFamily: 'Consolas,mono'
+    }
 
+    var numResults = this.state.typeaheadResults.length
+    var dropdownElems = this.state.typeaheadResults.map(function (result, index) {
+      return (
+        <BS.MenuItem>
+          <div style={styleDropdownAddress}>{result.address}</div>
+          <div style={styleDropdownType}>{result.type.toUpperCase()}</div>
+        </BS.MenuItem>
+      )
+    })
+    var dropdownElem = numResults === 0 ? null : (
+      <BS.DropdownMenu style={{display:'block'}}>
+        {dropdownElems}
+      </BS.DropdownMenu>
+    )
     var itemElems = this.state.items.map(function (item, index) {
       var text = item.name || item.address
-      var deleteButtonElem = (<BS.Button bsSize='xsmall' className='close'><span>&nbsp;&times;</span></BS.Button>)
+      var deleteButtonElem = (
+        <BS.Button bsSize='xsmall' className='close'>
+          <span>&nbsp;&times;</span>
+        </BS.Button>
+      )
       return (<span style={styleAddress} key={index}>{text} {deleteButtonElem}</span>)
     })
     return (
       <div style={styleContainer}>
          {itemElems}
-         <span>
-           <textarea
-             key='typeahead'
-             ref='typeahead'
-             style={styleTypeahead}
-             rows='1'
-             spellCheck='false'
-             autoComplete='false'
-             value={this.state.typeahead}
-             onChange={this.onTypeahead} 
-             onKeyDown={this.onTypeaheadKey} />
-        </span>
+         <textarea
+           key='typeahead'
+           ref='typeahead'
+           style={styleTypeahead}
+           rows='1'
+           spellCheck='false'
+           autoComplete='false'
+           value={this.state.typeahead}
+           onChange={this.onTypeahead} 
+           onKeyDown={this.onTypeaheadKey} />
+         {dropdownElem}
       </div>
     )
   }
